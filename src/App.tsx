@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { auth } from './services/firebase';
-import { onAuthStateChanged, getRedirectResult } from 'firebase/auth';
 import { UserProfile } from './types/user';
 
 // Pages & Components
@@ -18,37 +17,43 @@ export function App() {
   const [loadingAuth, setLoadingAuth] = useState(true);
 
   useEffect(() => {
-    getRedirectResult(auth).then((result: any) => {
-      if (result && result.user) {
-        const u = result.user;
-        setUser({
-          id: u.uid,
-          name: u.displayName || 'Minecraft Dev',
-          displayName: u.displayName || 'Minecraft Dev',
-          email: u.email || '',
-          photoURL: u.photoURL || undefined,
-          joinedDate: new Date().toISOString(),
-        });
-      }
-    }).catch((err: any) => console.error(err));
+    if (auth && typeof auth.getRedirectResult === 'function') {
+      auth.getRedirectResult().then((result: any) => {
+        if (result && result.user) {
+          const u = result.user;
+          setUser({
+            id: u.uid,
+            name: u.displayName || 'Minecraft Dev',
+            displayName: u.displayName || 'Minecraft Dev',
+            email: u.email || '',
+            photoURL: u.photoURL || undefined,
+            joinedDate: new Date().toISOString(),
+          });
+        }
+      }).catch((err: any) => console.error(err));
+    }
 
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: any) => {
-      if (firebaseUser) {
-        setUser({
-          id: firebaseUser.uid,
-          name: firebaseUser.displayName || 'Minecraft Dev',
-          displayName: firebaseUser.displayName || 'Minecraft Dev',
-          email: firebaseUser.email || '',
-          photoURL: firebaseUser.photoURL || undefined,
-          joinedDate: new Date().toISOString(),
-        });
-      } else {
-        setUser(null);
-      }
+    if (auth && typeof auth.onAuthStateChanged === 'function') {
+      const unsubscribe = auth.onAuthStateChanged((firebaseUser: any) => {
+        if (firebaseUser) {
+          setUser({
+            id: firebaseUser.uid,
+            name: firebaseUser.displayName || 'Minecraft Dev',
+            displayName: firebaseUser.displayName || 'Minecraft Dev',
+            email: firebaseUser.email || '',
+            photoURL: firebaseUser.photoURL || undefined,
+            joinedDate: new Date().toISOString(),
+          });
+        } else {
+          setUser(null);
+        }
+        setLoadingAuth(false);
+      });
+
+      return () => unsubscribe();
+    } else {
       setLoadingAuth(false);
-    });
-
-    return () => unsubscribe();
+    }
   }, []);
 
   if (loadingAuth) {
