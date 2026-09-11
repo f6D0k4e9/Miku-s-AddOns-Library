@@ -46,6 +46,11 @@ export function App() {
   const [loadingAuth, setLoadingAuth] = useState(true);
 
   useEffect(() => {
+    // Safety fallback: Never let auth loading hang for more than 1.5 seconds
+    const safetyTimer = setTimeout(() => {
+      setLoadingAuth(false);
+    }, 1500);
+
     if (auth && typeof auth.getRedirectResult === 'function') {
       auth.getRedirectResult().then((result: any) => {
         if (result && result.user) {
@@ -64,6 +69,7 @@ export function App() {
 
     if (auth && typeof auth.onAuthStateChanged === 'function') {
       const unsubscribe = auth.onAuthStateChanged((firebaseUser: any) => {
+        clearTimeout(safetyTimer);
         if (firebaseUser) {
           setUser({
             id: firebaseUser.uid,
@@ -79,8 +85,12 @@ export function App() {
         setLoadingAuth(false);
       });
 
-      return () => unsubscribe();
+      return () => {
+        clearTimeout(safetyTimer);
+        unsubscribe();
+      };
     } else {
+      clearTimeout(safetyTimer);
       setLoadingAuth(false);
     }
   }, []);
