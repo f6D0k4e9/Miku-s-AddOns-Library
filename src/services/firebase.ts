@@ -1,6 +1,7 @@
-import { initializeApp, getApps } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth';
 import { UserProfile } from '../types/user';
+
+// Access the global firebase object injected via CDN script tags in index.html
+const firebase = (window as any).firebase;
 
 const firebaseConfig = {
   apiKey: "AIzaSyCCkiSqptK67rrBYQRTRC54_PlpSanSVM0",
@@ -12,18 +13,27 @@ const firebaseConfig = {
   measurementId: "G-4SZGJS9YE8"
 };
 
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-export const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
+// Initialize Firebase App if not already initialized
+if (firebase && !firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+export const auth = firebase ? firebase.auth() : null;
+const googleProvider = firebase ? new firebase.auth.GoogleAuthProvider() : null;
 
 export const signInWithGoogle = async (): Promise<UserProfile | null> => {
+  if (!auth || !googleProvider) {
+    console.error('Firebase Auth is not initialized from CDN.');
+    return null;
+  }
+
   try {
     let result;
     try {
-      result = await signInWithPopup(auth, googleProvider);
+      result = await auth.signInWithPopup(googleProvider);
     } catch (popupError) {
-      // Fallback for mobile web environments where popups might be blocked
-      await signInWithRedirect(auth, googleProvider);
+      // Fallback for mobile views where popups get blocked
+      await auth.signInWithRedirect(googleProvider);
       return null;
     }
 
@@ -43,8 +53,9 @@ export const signInWithGoogle = async (): Promise<UserProfile | null> => {
 };
 
 export const logoutUser = async () => {
+  if (!auth) return;
   try {
-    await signOut(auth);
+    await auth.signOut();
   } catch (error) {
     console.error('Sign-Out Error:', error);
   }
