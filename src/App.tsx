@@ -115,7 +115,7 @@ export function App() {
         <div>
           {user ? (
             <div className="flex items-center space-x-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-full">
-              <span className="text-xs font-semibold text-cyan-300">{user.name.split(' ')[0]}</span>
+              <span className="text-xs font-semibold text-cyan-300">{(user.name || 'Dev').split(' ')[0]}</span>
               <button onClick={handleLogout} className="text-[10px] text-red-400 hover:text-red-300 ml-1">
                 Logout
               </button>
@@ -277,4 +277,4 @@ export function App() {
 }
 
 export default App;
-          
+    
