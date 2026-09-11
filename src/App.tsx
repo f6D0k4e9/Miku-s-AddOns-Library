@@ -11,12 +11,17 @@ import { SettingsPage } from './pages/SettingsPage';
 import { AddonDetail } from './pages/AddonDetail';
 import { AuthModal } from './components/AuthModal';
 
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
 class RouteErrorBoundary extends React.Component<
   { children: React.ReactNode },
-  { hasError: boolean; error: Error | null }
+  ErrorBoundaryState
 > {
-  state = { hasError: false, error: null };
-  static getDerivedStateFromError(error: Error) {
+  state: ErrorBoundaryState = { hasError: false, error: null };
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { hasError: true, error };
   }
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
