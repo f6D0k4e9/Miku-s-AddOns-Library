@@ -144,6 +144,34 @@ export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelect
             ))}
           </div>
         </div>
+
+        {/* Suggested Mods */}
+        <div className="pt-4 border-t border-zinc-800/80 space-y-3">
+          <h3 className="text-xs font-black text-white flex items-center space-x-2">
+            <span className="w-1 h-3 bg-sky-500 rounded-full"></span>
+            <span>Suggested Mods</span>
+          </h3>
+
+          <div className="flex space-x-3 overflow-x-auto pb-2">
+            {ADDONS_DATA.filter((a) => a.slug !== slug).map((mod) => (
+              <div
+                key={mod.slug}
+                onClick={() => {
+                  setActiveMediaIndex(0);
+                  onSelectAddon(mod.slug);
+                }}
+                className="flex-shrink-0 w-32 bg-zinc-900/80 rounded-xl border border-zinc-800 overflow-hidden cursor-pointer hover:border-sky-500/50 transition"
+              >
+                <div className="p-2 space-y-1">
+                  <h4 className="text-[11px] font-bold text-white truncate">{mod.title}</h4>
+                  <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-sky-500/20 text-sky-400">
+                    {mod.category}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
