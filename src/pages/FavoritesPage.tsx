@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Download, Bookmark, LogIn } from 'lucide-react';
+import { Heart, Bookmark, LogIn } from 'lucide-react';
 import { ADDONS_DATA } from '../data/addons';
 import { getCoverForAddon } from '../utils/imageLocators';
 import { UserProfile } from '../types/user';
