@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { loginWithGoogle } from '../services/firebase';
+import { signInWithGoogle } from '../services/firebase';
 import { UserProfile } from '../types/user';
 
 interface AuthModalProps {
@@ -13,7 +13,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
   if (!isOpen) return null;
 
   const handleGoogleSignIn = async () => {
-    const loggedUser = await loginWithGoogle();
+    const loggedUser = await signInWithGoogle();
     if (loggedUser) {
       onLoginSuccess(loggedUser);
       onClose();
