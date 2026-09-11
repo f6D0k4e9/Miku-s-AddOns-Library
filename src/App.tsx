@@ -19,12 +19,10 @@ export function App() {
   const [loadingAuth, setLoadingAuth] = useState(true);
 
   useEffect(() => {
-    // 1. Handle mobile redirect sign-in result if the browser was redirected
     getRedirectResult(auth).catch((error: any) => {
       console.error('Redirect sign-in error:', error);
     });
 
-    // 2. Listen to real-time Firebase auth state changes
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: any) => {
       if (firebaseUser) {
         try {
@@ -39,7 +37,9 @@ export function App() {
             profileData = {
               id: firebaseUser.uid,
               name: firebaseUser.displayName || 'Minecraft Dev',
+              displayName: firebaseUser.displayName || 'Minecraft Dev',
               email: firebaseUser.email || '',
+              photoURL: firebaseUser.photoURL || undefined,
               joinedDate: new Date().toISOString(),
             };
             await setDoc(userRef, profileData);
@@ -69,7 +69,6 @@ export function App() {
   return (
     <Router>
       <div className="min-h-screen bg-slate-950 text-white flex flex-col">
-        {/* Main Content Router */}
         <div className="flex-1">
           <Routes>
             <Route path="/" element={<Home user={user} onOpenAuth={() => setIsAuthOpen(true)} />} />
@@ -80,7 +79,6 @@ export function App() {
           </Routes>
         </div>
 
-        {/* Global Auth Modal */}
         <AuthModal
           isOpen={isAuthOpen}
           onClose={() => setIsAuthOpen(false)}
