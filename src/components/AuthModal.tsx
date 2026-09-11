@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { loginWithGoogle } from '../firebase';
+import { loginWithGoogle } from '../services/firebase';
 import { UserProfile } from '../types/user';
 
 interface AuthModalProps {
@@ -46,3 +46,5 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
     </div>
   );
 };
+
+export default AuthModal;
