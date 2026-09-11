@@ -1,9 +1,9 @@
 import React from 'react';
 import { LogOut, ShieldAlert, CheckCircle2, Globe, Headphones, Smartphone } from 'lucide-react';
-import { logoutUser } from '../firebase';
+import { logoutUser } from '../services/firebase';
 import { UserProfile } from '../types/user';
 
-interface SettingsPageProps {
+export interface SettingsPageProps {
   user: UserProfile | null;
   setUser: (u: UserProfile | null) => void;
   onOpenAuth: () => void;
@@ -32,7 +32,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser, onOpe
                 </div>
               )}
               <div className="overflow-hidden">
-                <h3 className="text-sm font-bold text-white truncate">{user.displayName || 'Logged In'}</h3>
+                <h3 className="text-sm font-bold text-white truncate">{user.name || user.displayName || 'Logged In'}</h3>
                 <p className="text-[11px] text-zinc-400 truncate max-w-[150px]">{user.email}</p>
               </div>
             </div>
@@ -108,3 +108,5 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser, onOpe
     </div>
   );
 };
+
+export default SettingsPage;
