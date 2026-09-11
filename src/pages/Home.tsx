@@ -1,28 +1,23 @@
 import React, { useState } from 'react';
-import { Header } from '../components/Header';
-import { ADDONS_DATA } from '../data/addons';
+import { useNavigate } from 'react-router-dom';
 import { Download } from 'lucide-react';
+import { ADDONS_DATA } from '../data/addons';
+import { Header } from '../components/Header';
+import { getCoverForAddon } from '../utils/imageLocators';
 
-// DYNAMIC IMAGE LOCATOR
-const addonImages = import.meta.glob<{ default: string }>('/src/addons/*/*.{png,jpg,jpeg,webp}', { eager: true });
-
-function getCoverForAddon(slug: string): string {
-  const matchKey = Object.keys(addonImages).find((path) => path.includes(`/addons/${slug}/`));
-  return matchKey ? addonImages[matchKey].default : `https://placehold.co/600x400/0ea5e9/ffffff?text=${slug}`;
-}
-
-interface HomeProps {
-  onSelectAddon: (slug: string) => void;
-}
-
-export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
+export const Home: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'Home' | 'For you'>('Home');
   const [currentSlide, setCurrentSlide] = useState(0);
+  const navigate = useNavigate();
 
   const featured = ADDONS_DATA[currentSlide] || ADDONS_DATA[0];
 
+  const handleSelectAddon = (slug: string) => {
+    navigate(`/addon/${slug}`);
+  };
+
   return (
-    <div className="space-y-4">
+    <div className="p-4 space-y-4 pb-24">
       <Header activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {/* Banner */}
@@ -45,7 +40,7 @@ export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
       {featured && (
         <div className="space-y-2">
           <div
-            onClick={() => onSelectAddon(featured.slug)}
+            onClick={() => handleSelectAddon(featured.slug)}
             className="group cursor-pointer relative aspect-[16/9] rounded-2xl overflow-hidden border border-zinc-800 shadow-xl bg-zinc-900"
           >
             <img
@@ -80,7 +75,7 @@ export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
         {ADDONS_DATA.map((addon) => (
           <div
             key={addon.id}
-            onClick={() => onSelectAddon(addon.slug)}
+            onClick={() => handleSelectAddon(addon.slug)}
             className="group cursor-pointer bg-zinc-900/90 rounded-2xl border border-zinc-800 overflow-hidden flex flex-col justify-between hover:border-sky-500/50 transition duration-300"
           >
             <div className="relative aspect-[4/3] w-full bg-zinc-800 overflow-hidden">
@@ -111,4 +106,4 @@ export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
     </div>
   );
 };
-        
+                  
