@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ADDONS_DATA } from '../data/addons';
 import { ArrowLeft, ShieldCheck, Download, Languages, Play } from 'lucide-react';
 
-// DYNAMIC IMAGES FROM ADDON FOLDER: Reads directly from `src/addons/[slug]/`
 const allAddonImages = import.meta.glob<{ default: string }>('/src/addons/*/*.{png,jpg,jpeg,webp}', { eager: true });
 
 function getAddonFolderImages(slug: string): string[] {
@@ -11,18 +11,15 @@ function getAddonFolderImages(slug: string): string[] {
     .map((path) => allAddonImages[path].default);
 }
 
-interface AddonDetailProps {
-  slug: string;
-  onBack: () => void;
-  onSelectAddon: (slug: string) => void;
-}
+export const AddonDetail: React.FC = () => {
+  const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
 
-export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelectAddon }) => {
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
   const [isMediaChanging, setIsMediaChanging] = useState(false);
 
   const addon = ADDONS_DATA.find((item) => item.slug === slug) || ADDONS_DATA[0];
-  const images = getAddonFolderImages(slug);
+  const images = slug ? getAddonFolderImages(slug) : [];
 
   const handleMediaSwitch = (index: number) => {
     if (index === activeMediaIndex) return;
@@ -34,11 +31,24 @@ export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelect
   };
 
   const handleDownload = () => {
-    window.open(addon.downloadUrl, '_blank', 'noopener,noreferrer');
+    if (addon?.downloadUrl) {
+      window.open(addon.downloadUrl, '_blank', 'noopener,noreferrer');
+    }
   };
 
+  const onBack = () => {
+    navigate(-1);
+  };
+
+  const onSelectAddon = (newSlug: string) => {
+    setActiveMediaIndex(0);
+    navigate(`/addon/${newSlug}`);
+  };
+
+  if (!addon) return <div className="p-4 text-white">Addon not found.</div>;
+
   return (
-    <div className="space-y-4">
+    <div className="p-4 space-y-4 pb-24">
       {/* Top Navigation */}
       <div className="flex items-center justify-between border-b border-zinc-900 pb-2">
         <button onClick={onBack} className="flex items-center space-x-1 text-sky-400 font-bold text-xs">
@@ -172,10 +182,7 @@ export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelect
             {ADDONS_DATA.filter((a) => a.slug !== slug).map((mod) => (
               <div
                 key={mod.slug}
-                onClick={() => {
-                  setActiveMediaIndex(0);
-                  onSelectAddon(mod.slug);
-                }}
+                onClick={() => onSelectAddon(mod.slug)}
                 className="flex-shrink-0 w-32 bg-zinc-900/80 rounded-xl border border-zinc-800 overflow-hidden cursor-pointer hover:border-sky-500/50 transition active:scale-95"
               >
                 <div className="p-2 space-y-1">
