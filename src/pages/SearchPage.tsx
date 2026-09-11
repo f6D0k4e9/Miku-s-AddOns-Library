@@ -1,177 +1,112 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Search, Download, X, Sparkles } from 'lucide-react';
-import { ADDONS_DATA } from '../data/addons';
-import { getCoverForAddon } from '../utils/imageLocators';
+import React from 'react';
+import { LogOut, ShieldAlert, CheckCircle2, Globe, Headphones, Smartphone } from 'lucide-react';
+import { logoutUser } from '../services/firebase';
+import { UserProfile } from '../types/user';
 
-export const SearchPage: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const navigate = useNavigate();
+export interface SettingsPageProps {
+  user: UserProfile | null;
+  setUser: (u: UserProfile | null) => void;
+  onOpenAuth: () => void;
+}
 
-  // Extract unique categories dynamically
-  const categories = ['All', ...Array.from(new Set(ADDONS_DATA.map((item) => item.category)))];
-
-  // Filter addons based on search input and selected category
-  const filteredAddons = ADDONS_DATA.filter((addon) => {
-    const matchesSearch =
-      addon.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      addon.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      addon.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      addon.description.some((line) => line.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    const matchesCategory = selectedCategory === 'All' || addon.category === selectedCategory;
-
-    return matchesSearch && matchesCategory;
-  });
-
-  // Recommendations to show when query is empty
-  const recommendedAddons = ADDONS_DATA.slice(0, 4);
+export const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser, onOpenAuth }) => {
+  const handleSignOut = async () => {
+    await logoutUser();
+    setUser(null);
+  };
 
   return (
     <div className="p-4 space-y-4 pb-24">
-      {/* Search Header & Input */}
-      <div className="space-y-3">
-        <h2 className="text-lg font-black text-white">Discover Addons</h2>
-        
-        <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search mods that are available here..."
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl pl-10 pr-10 py-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-sky-500 transition"
-          />
-          {searchQuery && (
+      <h2 className="text-lg font-black text-white border-b border-zinc-900 pb-2">Settings</h2>
+
+      {/* Account Info / Auth Box */}
+      <div className="bg-zinc-900/90 rounded-2xl p-4 border border-zinc-800 space-y-3">
+        {user ? (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              {user.photoURL ? (
+                <img src={user.photoURL} alt="Profile" className="w-10 h-10 rounded-full border border-sky-400/40 object-cover" />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-sky-400 font-bold">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+              )}
+              <div className="overflow-hidden">
+                <h3 className="text-sm font-bold text-white truncate">{user.name || user.displayName || 'Logged In'}</h3>
+                <p className="text-[11px] text-zinc-400 truncate max-w-[150px]">{user.email}</p>
+              </div>
+            </div>
             <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white"
+              onClick={handleSignOut}
+              className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl text-xs font-bold text-red-400 flex items-center space-x-1 transition active:scale-95"
             >
-              <X className="w-3 h-3" />
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Sign Out</span>
             </button>
-          )}
-        </div>
-      </div>
-
-      {/* Category Filter Pills */}
-      <div className="flex space-x-2 overflow-x-auto pb-1 scrollbar-none">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${
-              selectedCategory === cat
-                ? 'bg-sky-500 text-slate-950 shadow-lg shadow-sky-500/20'
-                : 'bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-zinc-700'
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Results or Recommendations */}
-      {searchQuery.trim() === '' ? (
-        <div className="space-y-4 pt-2">
-          <div className="flex items-center space-x-2 text-xs font-black text-sky-400">
-            <Sparkles className="w-4 h-4" />
-            <span>Recommended For You</span>
           </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            {recommendedAddons.map((addon) => (
-              <div
-                key={addon.id}
-                onClick={() => navigate(`/addon/${addon.slug}`)}
-                className="group cursor-pointer bg-zinc-900/90 rounded-2xl border border-zinc-800 overflow-hidden flex flex-col justify-between hover:border-sky-500/50 transition duration-300"
-              >
-                <div className="relative aspect-[4/3] w-full bg-zinc-800 overflow-hidden">
-                  <img
-                    src={getCoverForAddon(addon.slug)}
-                    alt={addon.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                  />
-                </div>
-
-                <div className="p-3 space-y-2 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h4 className="text-xs font-bold text-white line-clamp-1 group-hover:text-sky-400 transition">
-                      {addon.title}
-                    </h4>
-                    <p className="text-[10px] text-zinc-400 line-clamp-1">{addon.author}</p>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="px-2 py-0.5 rounded text-[8px] font-black uppercase bg-sky-500/20 text-sky-400 border border-sky-500/30">
-                      {addon.category}
-                    </span>
-                    <div className="w-6 h-6 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-300 group-hover:bg-sky-500 group-hover:text-slate-950 transition">
-                      <Download className="w-3 h-3" />
-                    </div>
-                  </div>
-                </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="flex items-start space-x-3">
+              <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 flex-shrink-0">
+                <ShieldAlert className="w-5 h-5 text-sky-400" />
               </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          <div className="flex justify-between items-center text-xs text-zinc-400 px-1">
-            <span>Search Results</span>
-            <span className="font-bold text-white">{filteredAddons.length} found</span>
-          </div>
-
-          {filteredAddons.length > 0 ? (
-            <div className="grid grid-cols-2 gap-3">
-              {filteredAddons.map((addon) => (
-                <div
-                  key={addon.id}
-                  onClick={() => navigate(`/addon/${addon.slug}`)}
-                  className="group cursor-pointer bg-zinc-900/90 rounded-2xl border border-zinc-800 overflow-hidden flex flex-col justify-between hover:border-sky-500/50 transition duration-300"
-                >
-                  <div className="relative aspect-[4/3] w-full bg-zinc-800 overflow-hidden">
-                    <img
-                      src={getCoverForAddon(addon.slug)}
-                      alt={addon.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                    />
-                  </div>
-
-                  <div className="p-3 space-y-2 flex-1 flex flex-col justify-between">
-                    <div>
-                      <h4 className="text-xs font-bold text-white line-clamp-1 group-hover:text-sky-400 transition">
-                        {addon.title}
-                      </h4>
-                      <p className="text-[10px] text-zinc-400 line-clamp-1">{addon.author}</p>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-1">
-                      <span className="px-2 py-0.5 rounded text-[8px] font-black uppercase bg-sky-500/20 text-sky-400 border border-sky-500/30">
-                        {addon.category}
-                      </span>
-                      <div className="w-6 h-6 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-300 group-hover:bg-sky-500 group-hover:text-slate-950 transition">
-                        <Download className="w-3 h-3" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16 space-y-3 bg-zinc-900/40 rounded-3xl border border-zinc-800/80">
-              <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-zinc-500">
-                <Search className="w-5 h-5" />
-              </div>
-              <div className="space-y-1">
-                <h4 className="text-sm font-bold text-white">No matching mods found</h4>
-                <p className="text-xs text-zinc-400">Try searching for a different keyword or category</p>
+              <div>
+                <h3 className="text-sm font-bold text-white">Settings Access Restricted</h3>
+                <p className="text-xs text-zinc-400 leading-snug mt-0.5">
+                  You must be logged in to view and modify your account settings.
+                </p>
               </div>
             </div>
-          )}
+            <button
+              onClick={onOpenAuth}
+              className="w-full bg-sky-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition active:scale-95 shadow-lg shadow-sky-500/20"
+            >
+              Sign In
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Language */}
+      <div className="bg-zinc-900/90 rounded-2xl p-3.5 border border-zinc-800 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 rounded-xl bg-zinc-800 flex items-center justify-center text-sky-400">
+            <Globe className="w-4 h-4" />
+          </div>
+          <span className="text-xs font-bold text-white">Language</span>
         </div>
-      )}
+        <span className="text-xs font-semibold text-zinc-400 bg-zinc-800/80 px-2.5 py-1 rounded-lg border border-zinc-700/50">English</span>
+      </div>
+
+      {/* Support */}
+      <div className="bg-zinc-900/90 rounded-2xl p-3.5 border border-zinc-800 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 rounded-xl bg-zinc-800 flex items-center justify-center text-sky-400">
+            <Headphones className="w-4 h-4" />
+          </div>
+          <span className="text-xs font-bold text-white">Support</span>
+        </div>
+        <span className="text-xs text-zinc-500">&gt;</span>
+      </div>
+
+      {/* App Banner */}
+      <div className="bg-gradient-to-r from-sky-950/60 via-zinc-900 to-zinc-900 rounded-2xl p-3.5 border border-sky-500/20 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-xl bg-sky-500 flex items-center justify-center font-black text-slate-950 text-sm shadow-md shadow-sky-500/20">
+            MA
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-white flex items-center space-x-1">
+              <Smartphone className="w-3.5 h-3.5 text-sky-400 inline" />
+              <span>Download App</span>
+            </h4>
+            <p className="text-[10px] text-zinc-400">Get Miku AddOns app for Android</p>
+          </div>
+        </div>
+        <span className="bg-sky-500/20 text-sky-400 border border-sky-500/30 text-[10px] font-black px-2.5 py-1 rounded-lg">Coming Soon</span>
+      </div>
     </div>
   );
 };
-    
+
+export default SettingsPage;
