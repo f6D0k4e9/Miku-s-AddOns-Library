@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ADDONS_DATA } from '../data/addons';
-import { ArrowLeft, ShieldCheck, Download, Languages, Play } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Download, Languages, Play, Heart } from 'lucide-react';
 
 const allAddonImages = import.meta.glob<{ default: string }>('/src/addons/*/*.{png,jpg,jpeg,webp}', { eager: true });
 
@@ -17,9 +17,43 @@ export const AddonDetail: React.FC = () => {
 
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
   const [isMediaChanging, setIsMediaChanging] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
 
   const addon = ADDONS_DATA.find((item) => item.slug === slug) || ADDONS_DATA[0];
   const images = slug ? getAddonFolderImages(slug) : [];
+
+  // Check if current addon is in favorites on load or slug change
+  useEffect(() => {
+    if (!slug) return;
+    const saved = localStorage.getItem('mik_favorites');
+    if (saved) {
+      try {
+        const favoriteSlugs: string[] = JSON.parse(saved);
+        setIsFavorited(favoriteSlugs.includes(slug));
+      } catch (e) {
+        console.error('Failed to parse favorites', e);
+      }
+    }
+  }, [slug]);
+
+  // Toggle favorite state and update localStorage
+  const toggleFavorite = () => {
+    if (!slug) return;
+    const saved = localStorage.getItem('mik_favorites');
+    let favoriteSlugs: string[] = saved ? JSON.parse(saved) : [];
+
+    if (isFavorited) {
+      favoriteSlugs = favoriteSlugs.filter((s) => s !== slug);
+      setIsFavorited(false);
+    } else {
+      if (!favoriteSlugs.includes(slug)) {
+        favoriteSlugs.push(slug);
+      }
+      setIsFavorited(true);
+    }
+
+    localStorage.setItem('mik_favorites', JSON.stringify(favoriteSlugs));
+  };
 
   const handleMediaSwitch = (index: number) => {
     if (index === activeMediaIndex) return;
@@ -128,9 +162,23 @@ export const AddonDetail: React.FC = () => {
 
       {/* Info Card */}
       <div className="bg-gradient-to-b from-zinc-900 via-zinc-950 to-black rounded-3xl p-4 border border-zinc-800/80 space-y-4">
-        <span className="px-3 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30">
-          {addon.category}
-        </span>
+        <div className="flex items-center justify-between">
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30">
+            {addon.category}
+          </span>
+
+          <button
+            onClick={toggleFavorite}
+            className={`w-9 h-9 rounded-2xl border flex items-center justify-center transition active:scale-90 ${
+              isFavorited
+                ? 'bg-rose-500/20 border-rose-500/40 text-rose-500'
+                : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
+            }`}
+            title={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Heart className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
+          </button>
+        </div>
 
         <h1 className="text-xl font-black text-white">{addon.title}</h1>
 
