@@ -4,8 +4,14 @@ import { Download } from 'lucide-react';
 import { ADDONS_DATA } from '../data/addons';
 import { Header } from '../components/Header';
 import { getCoverForAddon } from '../utils/imageLocators';
+import { UserProfile } from '../types/user';
 
-export const Home: React.FC = () => {
+interface HomeProps {
+  user: UserProfile | null;
+  onOpenAuth: () => void;
+}
+
+export const Home: React.FC<HomeProps> = ({ user: _user, onOpenAuth: _onOpenAuth }) => {
   const [activeTab, setActiveTab] = useState<'Home' | 'For you'>('Home');
   const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
@@ -106,4 +112,5 @@ export const Home: React.FC = () => {
     </div>
   );
 };
-                  
+
+export default Home;
