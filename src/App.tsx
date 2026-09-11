@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { auth, signInWithGoogle, logoutUser } from './services/firebase';
+import { auth } from './services/firebase';
 import { UserProfile } from './types/user';
 
 // Your Actual Page Imports
@@ -64,19 +64,6 @@ export function App() {
     }
   }, []);
 
-  const handleGoogleLogin = async () => {
-    const profile = await signInWithGoogle();
-    if (profile) {
-      setUser(profile);
-      setIsAuthOpen(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    await logoutUser();
-    setUser(null);
-  };
-
   if (loadingAuth) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center text-cyan-400 font-black text-sm tracking-widest animate-pulse">
@@ -90,18 +77,17 @@ export function App() {
       <div className="min-h-screen bg-slate-950 text-white flex flex-col">
         <div className="flex-1">
           <Routes>
-            <Route path="/" element={<Home user={user} onOpenAuth={() => setIsAuthOpen(true)} onLogout={handleLogout} />} />
+            <Route path="/" element={<Home user={user} onOpenAuth={() => setIsAuthOpen(true)} />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/favorites" element={<FavoritesPage user={user} onOpenAuth={() => setIsAuthOpen(true)} />} />
-            <Route path="/settings" element={<SettingsPage user={user} setUser={setUser} onOpenAuth={() => setIsAuthOpen(true)} onLogout={handleLogout} />} />
-            <Route path="/addon/:slug" element={<AddonDetail user={user} onOpenAuth={() => setIsAuthOpen(true)} />} />
+            <Route path="/settings" element={<SettingsPage user={user} setUser={setUser} onOpenAuth={() => setIsAuthOpen(true)} />} />
+            <Route path="/addon/:slug" element={<AddonDetail />} />
           </Routes>
         </div>
 
         <AuthModal
           isOpen={isAuthOpen}
           onClose={() => setIsAuthOpen(false)}
-          onLogin={handleGoogleLogin}
           onLoginSuccess={(profile) => {
             setUser(profile);
             setIsAuthOpen(false);
@@ -113,4 +99,3 @@ export function App() {
 }
 
 export default App;
-            
