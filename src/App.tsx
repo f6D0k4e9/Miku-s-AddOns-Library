@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Home, Search, Heart, Settings as SettingsIcon, LogOut, ShieldAlert, CheckCircle2, Globe, Headphones, Smartphone, X } from 'lucide-react';
+import { Home, Search, Heart, Settings as SettingsIcon, LogOut, ShieldAlert, CheckCircle2, Globe, Headphones, Smartphone, X, Download, Flame, Layers } from 'lucide-react';
 import { auth, loginWithGoogle, logoutUser } from './firebase';
 
 // --- User Interface ---
@@ -9,6 +9,43 @@ interface UserProfile {
   email?: string | null;
   photoURL?: string | null;
 }
+
+// --- Sample Addon Data Structure ---
+interface Addon {
+  id: string;
+  title: string;
+  category: string;
+  version: string;
+  downloads: string;
+  imageUrl: string;
+}
+
+const SAMPLE_ADDONS: Addon[] = [
+  {
+    id: '1',
+    title: 'Custom Furniture Addon',
+    category: 'Decor',
+    version: 'v1.2.0',
+    downloads: '12.5k',
+    imageUrl: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: '2',
+    title: 'Advanced Vehicles Pack',
+    category: 'Vehicles',
+    version: 'v2.0.1',
+    downloads: '8.9k',
+    imageUrl: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: '3',
+    title: 'More Mobs & Bosses',
+    category: 'Entities',
+    version: 'v1.0.4',
+    downloads: '24.1k',
+    imageUrl: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?auto=format&fit=crop&w=600&q=80',
+  },
+];
 
 // --- Bottom Navigation Component ---
 const BottomNav = () => {
@@ -45,12 +82,98 @@ const BottomNav = () => {
 };
 
 // --- Home Page ---
-const HomePage = () => (
-  <div className="p-4 space-y-4">
-    <h1 className="text-xl font-black text-white">Home</h1>
-    <p className="text-xs text-zinc-400">Welcome to Miku's AddOns Library!</p>
-  </div>
-);
+const HomePage = () => {
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const categories = ['All', 'Popular', 'Entities', 'Decor', 'Vehicles', 'WorldGen'];
+
+  return (
+    <div className="p-4 space-y-5">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-black text-white tracking-tight">Miku's AddOns</h1>
+          <p className="text-xs text-zinc-400">Discover and download Minecraft addons</p>
+        </div>
+        <div className="w-9 h-9 rounded-2xl bg-red-600/20 border border-red-600/40 flex items-center justify-center text-red-500 font-black text-xs">
+          MC
+        </div>
+      </div>
+
+      {/* Featured Banner */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-red-900/60 via-zinc-900 to-zinc-900 p-5 border border-red-500/20">
+        <div className="relative z-10 space-y-2 max-w-[220px]">
+          <span className="inline-flex items-center space-x-1 bg-red-600/30 text-red-400 border border-red-500/30 px-2 py-0.5 rounded-full text-[10px] font-bold">
+            <Flame className="w-3 h-3" />
+            <span>Featured Release</span>
+          </span>
+          <h2 className="text-base font-black text-white leading-tight">Amethyst SMP Script Engine</h2>
+          <p className="text-[11px] text-zinc-300">Custom economy, home teleports, and custom UI system.</p>
+        </div>
+      </div>
+
+      {/* Category Pills */}
+      <div className="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition active:scale-95 ${
+              selectedCategory === cat
+                ? 'bg-red-600 text-white shadow-md shadow-red-600/20'
+                : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Addons Grid */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold text-white flex items-center space-x-1.5">
+            <Layers className="w-4 h-4 text-red-500" />
+            <span>Available Addons</span>
+          </h3>
+          <span className="text-[11px] text-zinc-500">{SAMPLE_ADDONS.length} Items</span>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3">
+          {SAMPLE_ADDONS.map((addon) => (
+            <div
+              key={addon.id}
+              className="bg-zinc-900/80 border border-zinc-800/80 rounded-2xl p-3 flex items-center space-x-3 hover:border-zinc-700 transition"
+            >
+              <img
+                src={addon.imageUrl}
+                alt={addon.title}
+                className="w-20 h-20 rounded-xl object-cover flex-shrink-0 bg-zinc-800"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-2">
+                  <span className="text-[10px] font-bold bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded-md border border-zinc-700/50">
+                    {addon.category}
+                  </span>
+                  <span className="text-[10px] text-zinc-500">{addon.version}</span>
+                </div>
+                <h4 className="text-xs font-bold text-white truncate mt-1">{addon.title}</h4>
+                <div className="flex items-center justify-between mt-3">
+                  <span className="text-[10px] text-zinc-400 flex items-center space-x-1">
+                    <Download className="w-3 h-3 text-zinc-500" />
+                    <span>{addon.downloads} downloads</span>
+                  </span>
+                  <button className="bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold px-3 py-1 rounded-lg transition active:scale-95">
+                    Get
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // --- Search Page ---
 const SearchPage = () => (
@@ -58,7 +181,7 @@ const SearchPage = () => (
     <div className="relative">
       <input
         type="text"
-        placeholder="Search by mod link..."
+        placeholder="Search by mod link or name..."
         className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-red-600"
       />
     </div>
@@ -241,7 +364,6 @@ export default function App() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  // Sync auth state on load
   useEffect(() => {
     if (auth) {
       const unsubscribe = auth.onAuthStateChanged((currentUser: any) => {
@@ -269,13 +391,9 @@ export default function App() {
           <Route path="/settings" element={<SettingsPage user={user} setUser={setUser} onOpenAuth={() => setIsAuthModalOpen(true)} />} />
         </Routes>
 
-        {/* Modal Overlay */}
         <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} setUser={setUser} />
-
-        {/* Bottom Navigation */}
         <BottomNav />
       </div>
     </Router>
   );
-          }
-            
+}
