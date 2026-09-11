@@ -3,14 +3,14 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { auth } from './firebase';
 import { UserProfile } from './types/user';
 
-import { FloatingNav } from './FloatingNav';
-import { AuthModal } from './AuthModal';
+import { FloatingNav } from './components/FloatingNav';
+import { AuthModal } from './components/AuthModal';
 
-import { Home } from './Home';
-import { AddonDetail } from './AddonDetail';
-import { SearchPage } from './SearchPage';
-import { FavoritesPage } from './FavoritesPage';
-import { SettingsPage } from './SettingsPage';
+import { Home } from './pages/Home';
+import { AddonDetail } from './pages/AddonDetail';
+import { SearchPage } from './pages/SearchPage';
+import { FavoritesPage } from './pages/FavoritesPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 export default function App() {
   const [user, setUser] = useState<UserProfile | null>(null);
