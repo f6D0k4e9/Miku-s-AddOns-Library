@@ -1,70 +1,11 @@
+
 import React from 'react';
-import { LogOut, ShieldAlert, CheckCircle2, Globe, Headphones, Smartphone } from 'lucide-react';
-import { logoutUser } from '../services/firebase';
-import { UserProfile } from '../types/user';
+import { Globe, Headphones, Smartphone } from 'lucide-react';
 
-interface SettingsPageProps {
-  user: UserProfile | null;
-  setUser: (u: UserProfile | null) => void;
-  onOpenAuth: () => void;
-}
-
-export const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser, onOpenAuth }) => {
-  const handleSignOut = async () => {
-    await logoutUser();
-    setUser(null);
-  };
-
+export const SettingsPage: React.FC = () => {
   return (
     <div className="p-4 space-y-4 pb-24">
       <h2 className="text-lg font-black text-white border-b border-zinc-900 pb-2">Settings</h2>
-
-      <div className="bg-zinc-900/90 rounded-2xl p-4 border border-zinc-800 space-y-3">
-        {user ? (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              {user.photoURL ? (
-                <img src={user.photoURL} alt="Profile" className="w-10 h-10 rounded-full border border-sky-400/40 object-cover" />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-sky-400 font-bold">
-                  <CheckCircle2 className="w-5 h-5" />
-                </div>
-              )}
-              <div className="overflow-hidden">
-                <h3 className="text-sm font-bold text-white truncate">{user.name || user.displayName || 'Logged In'}</h3>
-                <p className="text-[11px] text-zinc-400 truncate max-w-[150px]">{user.email}</p>
-              </div>
-            </div>
-            <button
-              onClick={handleSignOut}
-              className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl text-xs font-bold text-red-400 flex items-center space-x-1 transition active:scale-95"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Sign Out</span>
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <div className="flex items-start space-x-3">
-              <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 flex-shrink-0">
-                <ShieldAlert className="w-5 h-5 text-sky-400" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-white">Settings Access Restricted</h3>
-                <p className="text-xs text-zinc-400 leading-snug mt-0.5">
-                  You must be logged in to view and modify your account settings.
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={onOpenAuth}
-              className="w-full bg-sky-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition active:scale-95 shadow-lg shadow-sky-500/20"
-            >
-              Sign In
-            </button>
-          </div>
-        )}
-      </div>
 
       <div className="bg-zinc-900/90 rounded-2xl p-3.5 border border-zinc-800 flex items-center justify-between">
         <div className="flex items-center space-x-3">
