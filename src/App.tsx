@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Home, Search, Heart, Settings as SettingsIcon, LogOut, ShieldAlert, CheckCircle2, Globe, Headphones, Smartphone, X, Download, Flame, Layers } from 'lucide-react';
+import { Home as HomeIcon, Search, Heart, Settings as SettingsIcon, LogOut, ShieldAlert, CheckCircle2, Globe, Headphones, Smartphone, X, Download } from 'lucide-react';
 import { auth, loginWithGoogle, logoutUser } from './firebase';
+import { ADDONS_DATA } from './data/addons';
+import { Header } from './components/Header';
 
 // --- User Interface ---
 interface UserProfile {
@@ -10,49 +12,20 @@ interface UserProfile {
   photoURL?: string | null;
 }
 
-// --- Sample Addon Data Structure ---
-interface Addon {
-  id: string;
-  title: string;
-  category: string;
-  version: string;
-  downloads: string;
-  imageUrl: string;
-}
+// --- Dynamic Image Locator ---
+const addonImages = import.meta.glob<{ default: string }>('/src/addons/*/*.{png,jpg,jpeg,webp}', { eager: true });
 
-const SAMPLE_ADDONS: Addon[] = [
-  {
-    id: '1',
-    title: 'Custom Furniture Addon',
-    category: 'Decor',
-    version: 'v1.2.0',
-    downloads: '12.5k',
-    imageUrl: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: '2',
-    title: 'Advanced Vehicles Pack',
-    category: 'Vehicles',
-    version: 'v2.0.1',
-    downloads: '8.9k',
-    imageUrl: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: '3',
-    title: 'More Mobs & Bosses',
-    category: 'Entities',
-    version: 'v1.0.4',
-    downloads: '24.1k',
-    imageUrl: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?auto=format&fit=crop&w=600&q=80',
-  },
-];
+function getCoverForAddon(slug: string): string {
+  const matchKey = Object.keys(addonImages).find((path) => path.includes(`/addons/${slug}/`));
+  return matchKey ? addonImages[matchKey].default : `https://placehold.co/600x400/0ea5e9/ffffff?text=${slug}`;
+}
 
 // --- Bottom Navigation Component ---
 const BottomNav = () => {
   const location = useLocation();
 
   const navItems = [
-    { path: '/', icon: Home, label: 'Home' },
+    { path: '/', icon: HomeIcon, label: 'Home' },
     { path: '/search', icon: Search, label: 'Search' },
     { path: '/favorite', icon: Heart, label: 'Favorites' },
     { path: '/settings', icon: SettingsIcon, label: 'Settings' },
@@ -81,95 +54,103 @@ const BottomNav = () => {
   );
 };
 
-// --- Home Page ---
+// --- Home Component ---
 const HomePage = () => {
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const categories = ['All', 'Popular', 'Entities', 'Decor', 'Vehicles', 'WorldGen'];
+  const [activeTab, setActiveTab] = useState<'Home' | 'For you'>('Home');
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const featured = ADDONS_DATA[currentSlide] || ADDONS_DATA[0];
+
+  const handleSelectAddon = (slug: string) => {
+    window.location.hash = `#/addon/${slug}`;
+  };
 
   return (
-    <div className="p-4 space-y-5">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-black text-white tracking-tight">Miku's AddOns</h1>
-          <p className="text-xs text-zinc-400">Discover and download Minecraft addons</p>
+    <div className="p-4 space-y-4">
+      <Header activeTab={activeTab} setActiveTab={setActiveTab} />
+
+      {/* Banner */}
+      <div className="bg-gradient-to-r from-sky-950/80 via-zinc-900 to-zinc-900 border border-sky-500/20 rounded-2xl p-3 flex items-center justify-between shadow-lg">
+        <div className="flex items-center space-x-3">
+          <div className="w-9 h-9 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center font-bold text-sky-400 text-xs">
+            MA
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-white">Upcoming official app soon</h4>
+            <p className="text-[10px] text-zinc-400">Get the full experience when launched</p>
+          </div>
         </div>
-        <div className="w-9 h-9 rounded-2xl bg-red-600/20 border border-red-600/40 flex items-center justify-center text-red-500 font-black text-xs">
-          MC
-        </div>
+        <span className="bg-sky-500 text-slate-950 text-[10px] font-black px-2.5 py-1 rounded-lg">
+          Soon
+        </span>
       </div>
 
-      {/* Featured Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-red-900/60 via-zinc-900 to-zinc-900 p-5 border border-red-500/20">
-        <div className="relative z-10 space-y-2 max-w-[220px]">
-          <span className="inline-flex items-center space-x-1 bg-red-600/30 text-red-400 border border-red-500/30 px-2 py-0.5 rounded-full text-[10px] font-bold">
-            <Flame className="w-3 h-3" />
-            <span>Featured Release</span>
-          </span>
-          <h2 className="text-base font-black text-white leading-tight">Amethyst SMP Script Engine</h2>
-          <p className="text-[11px] text-zinc-300">Custom economy, home teleports, and custom UI system.</p>
-        </div>
-      </div>
-
-      {/* Category Pills */}
-      <div className="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition active:scale-95 ${
-              selectedCategory === cat
-                ? 'bg-red-600 text-white shadow-md shadow-red-600/20'
-                : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
-            }`}
+      {/* Carousel */}
+      {featured && (
+        <div className="space-y-2">
+          <div
+            onClick={() => handleSelectAddon(featured.slug)}
+            className="group cursor-pointer relative aspect-[16/9] rounded-2xl overflow-hidden border border-zinc-800 shadow-xl bg-zinc-900"
           >
-            {cat}
-          </button>
-        ))}
-      </div>
+            <img
+              src={getCoverForAddon(featured.slug)}
+              alt={featured.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+            />
+            <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black via-black/60 to-transparent flex flex-col justify-end items-start space-y-1">
+              <span className="px-2 py-0.5 rounded text-[9px] font-black tracking-wider uppercase bg-sky-500 text-slate-950">
+                {featured.category}
+              </span>
+              <h3 className="text-base font-black text-white tracking-wide">{featured.title}</h3>
+            </div>
+          </div>
 
-      {/* Addons Grid */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-white flex items-center space-x-1.5">
-            <Layers className="w-4 h-4 text-red-500" />
-            <span>Available Addons</span>
-          </h3>
-          <span className="text-[11px] text-zinc-500">{SAMPLE_ADDONS.length} Items</span>
-        </div>
-
-        <div className="grid grid-cols-1 gap-3">
-          {SAMPLE_ADDONS.map((addon) => (
-            <div
-              key={addon.id}
-              className="bg-zinc-900/80 border border-zinc-800/80 rounded-2xl p-3 flex items-center space-x-3 hover:border-zinc-700 transition"
-            >
-              <img
-                src={addon.imageUrl}
-                alt={addon.title}
-                className="w-20 h-20 rounded-xl object-cover flex-shrink-0 bg-zinc-800"
+          <div className="flex justify-center space-x-1.5 pt-1">
+            {ADDONS_DATA.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentSlide(idx)}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  currentSlide === idx ? 'w-6 bg-sky-500' : 'w-1.5 bg-zinc-700'
+                }`}
               />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-bold bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded-md border border-zinc-700/50">
-                    {addon.category}
-                  </span>
-                  <span className="text-[10px] text-zinc-500">{addon.version}</span>
-                </div>
-                <h4 className="text-xs font-bold text-white truncate mt-1">{addon.title}</h4>
-                <div className="flex items-center justify-between mt-3">
-                  <span className="text-[10px] text-zinc-400 flex items-center space-x-1">
-                    <Download className="w-3 h-3 text-zinc-500" />
-                    <span>{addon.downloads} downloads</span>
-                  </span>
-                  <button className="bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold px-3 py-1 rounded-lg transition active:scale-95">
-                    Get
-                  </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Grid */}
+      <div className="grid grid-cols-2 gap-3 pt-2">
+        {ADDONS_DATA.map((addon) => (
+          <div
+            key={addon.id}
+            onClick={() => handleSelectAddon(addon.slug)}
+            className="group cursor-pointer bg-zinc-900/90 rounded-2xl border border-zinc-800 overflow-hidden flex flex-col justify-between hover:border-sky-500/50 transition duration-300"
+          >
+            <div className="relative aspect-[4/3] w-full bg-zinc-800 overflow-hidden">
+              <img
+                src={getCoverForAddon(addon.slug)}
+                alt={addon.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+              />
+            </div>
+
+            <div className="p-3 space-y-2 flex-1 flex flex-col justify-between">
+              <h4 className="text-xs font-bold text-white line-clamp-1 group-hover:text-sky-400 transition">
+                {addon.title}
+              </h4>
+
+              <div className="flex items-center justify-between pt-1">
+                <span className="px-2 py-0.5 rounded text-[8px] font-black uppercase bg-sky-500/20 text-sky-400 border border-sky-500/30">
+                  {addon.category}
+                </span>
+                <div className="w-6 h-6 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-300 group-hover:bg-sky-500 group-hover:text-slate-950 transition">
+                  <Download className="w-3 h-3" />
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -181,7 +162,7 @@ const SearchPage = () => (
     <div className="relative">
       <input
         type="text"
-        placeholder="Search by mod link or name..."
+        placeholder="Search by mod link..."
         className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-red-600"
       />
     </div>
@@ -396,4 +377,4 @@ export default function App() {
       </div>
     </Router>
   );
-}
+                }
