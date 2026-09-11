@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Bookmark, LogIn } from 'lucide-react';
+import { Heart, Bookmark } from 'lucide-react';
 import { ADDONS_DATA } from '../data/addons';
 import { getCoverForAddon } from '../utils/imageLocators';
-import { UserProfile } from '../types/user';
 
-interface FavoritesPageProps {
-  user: UserProfile | null;
-  onOpenAuth: () => void;
-}
-
-export const FavoritesPage: React.FC<FavoritesPageProps> = ({ user, onOpenAuth }) => {
+export const FavoritesPage: React.FC = () => {
   const [favoriteSlugs, setFavoriteSlugs] = useState<string[]>([]);
   const navigate = useNavigate();
 
@@ -36,16 +30,6 @@ export const FavoritesPage: React.FC<FavoritesPageProps> = ({ user, onOpenAuth }
           <h2 className="text-lg font-black text-white">Your Favorites</h2>
           <p className="text-xs text-zinc-400">Quick access to your saved mods</p>
         </div>
-
-        {!user && (
-          <button
-            onClick={onOpenAuth}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-bold active:scale-95 transition"
-          >
-            <LogIn className="w-3.5 h-3.5" />
-            <span>Sign In</span>
-          </button>
-        )}
       </div>
 
       {/* Grid of Favorites */}
