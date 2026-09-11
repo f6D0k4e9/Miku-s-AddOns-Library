@@ -19,9 +19,9 @@ export const ADDONS_DATA: AddonItem[] = [
     author: 'Oreville Studios',
     category: 'Add-ons',
     verifiedBy: 'Miku AddOns',
-    downloadUrl: 'https://rkns.link/jq1uj',
+    downloadUrl: 'https://rkns.link/or4k7',
     fileSize: '40.52 MB',
-    youtubeVideoId: 'f0X1tO3L614',
+    youtubeVideoId: 'AWLJGHCaDpc',
     description: [
       'BREAKING NEWS! Villager News is live in an official Oreville Studios x Element Animation collaboration! Bring your Villagers to life today!',
       '- 2,000+ voiced reactions!',
