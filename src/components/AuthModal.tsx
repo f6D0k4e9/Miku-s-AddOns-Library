@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { auth, signInWithGoogle } from '../services/firebase';
+import { signInWithGoogle } from '../services/firebase';
 import { UserProfile } from '../types/user';
 
 interface AuthModalProps {
@@ -14,17 +14,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
 
   const handleGoogleSignIn = async () => {
     try {
-      await signInWithGoogle();
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        const userProfile: UserProfile = {
-          id: currentUser.uid,
-          name: currentUser.displayName || 'Minecraft Dev',
-          displayName: currentUser.displayName || 'Minecraft Dev',
-          email: currentUser.email || '',
-          photoURL: currentUser.photoURL || undefined,
-          joinedDate: new Date().toISOString(),
-        };
+      const userProfile = await signInWithGoogle();
+      if (userProfile) {
         onLoginSuccess(userProfile);
         onClose();
       }
@@ -41,7 +32,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
         </button>
 
         <h2 className="text-xl font-black text-white">Welcome Back</h2>
-        <p className="text-xs text-zinc-400 mt-1 mb-6">Please sign in to continue</p>
+        <p className="text-xs text-zinc-400 mt-1 mb-6">Sign in with Google to continue</p>
 
         <button
           onClick={handleGoogleSignIn}
