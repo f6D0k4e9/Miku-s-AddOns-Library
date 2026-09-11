@@ -1,13 +1,6 @@
-// src/services/firebase.ts
-import { initializeApp } from 'firebase/app';
-import { 
-  getAuth, 
-  GoogleAuthProvider, 
-  signInWithPopup, 
-  signInWithRedirect, 
-  signOut 
-} from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeApp, getApps } from 'firebase/app';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth';
+import { UserProfile } from '../types/user';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCCkiSqptK67rrBYQRTRC54_PlpSanSVM0",
@@ -19,25 +12,40 @@ const firebaseConfig = {
   measurementId: "G-4SZGJS9YE8"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Export Auth & Firestore
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const auth = getAuth(app);
-export const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
-// Google Sign-In helper (with automatic mobile redirect fallback)
-export const signInWithGoogle = async () => {
+export const signInWithGoogle = async (): Promise<UserProfile | null> => {
   try {
-    await signInWithPopup(auth, googleProvider);
-  } catch (error: any) {
-    if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
+    let result;
+    try {
+      result = await signInWithPopup(auth, googleProvider);
+    } catch (popupError) {
+      // Fallback for mobile web environments where popups might be blocked
       await signInWithRedirect(auth, googleProvider);
-    } else {
-      throw error;
+      return null;
     }
+
+    const user = result.user;
+    return {
+      id: user.uid,
+      name: user.displayName || 'Minecraft Dev',
+      displayName: user.displayName || 'Minecraft Dev',
+      email: user.email || '',
+      photoURL: user.photoURL || undefined,
+      joinedDate: new Date().toISOString(),
+    };
+  } catch (error) {
+    console.error('Google Sign-In Error:', error);
+    return null;
   }
 };
 
-export const logoutUser = () => signOut(auth);
+export const logoutUser = async () => {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.error('Sign-Out Error:', error);
+  }
+};
