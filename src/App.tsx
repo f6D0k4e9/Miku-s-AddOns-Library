@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Home, Search, Heart, Settings as SettingsIcon, LogOut, ShieldAlert, CheckCircle2, Globe, Headphones, Smartphone, X } from 'lucide-react';
 import { auth, loginWithGoogle, logoutUser } from './firebase';
 
@@ -278,3 +278,4 @@ export default function App() {
     </Router>
   );
           }
+            
