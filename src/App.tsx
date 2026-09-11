@@ -3,14 +3,14 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { auth } from './firebase';
 import { UserProfile } from './types/user';
 
-import { FloatingNav } from './components/FloatingNav';
-import { AuthModal } from './components/AuthModal';
+import { FloatingNav } from './FloatingNav';
+import { AuthModal } from './AuthModal';
 
-import { HomePage } from './pages/HomePage';
-import { AddonDetailPage } from './pages/AddonDetailPage';
-import { SearchPage } from './pages/SearchPage';
-import { FavoritesPage } from './pages/FavoritesPage';
-import { SettingsPage } from './pages/SettingsPage';
+import { Home } from './Home';
+import { AddonDetail } from './AddonDetail';
+import { SearchPage } from './SearchPage';
+import { FavoritesPage } from './FavoritesPage';
+import { SettingsPage } from './SettingsPage';
 
 export default function App() {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -37,8 +37,8 @@ export default function App() {
     <Router>
       <div className="min-h-screen bg-black text-white font-sans selection:bg-sky-500 selection:text-slate-950">
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/addon/:slug" element={<AddonDetailPage />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/addon/:slug" element={<AddonDetail />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/favorite" element={<FavoritesPage user={user} onOpenAuth={() => setIsAuthModalOpen(true)} />} />
           <Route path="/settings" element={<SettingsPage user={user} setUser={setUser} onOpenAuth={() => setIsAuthModalOpen(true)} />} />
@@ -49,4 +49,4 @@ export default function App() {
       </div>
     </Router>
   );
-      }
+}
