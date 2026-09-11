@@ -1,52 +1,99 @@
-import { useState, useEffect } from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
-import { auth } from './firebase';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { auth, db } from './services/firebase';
+import { onAuthStateChanged, getRedirectResult } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { UserProfile } from './types/user';
 
-import { FloatingNav } from './components/FloatingNav';
-import { AuthModal } from './components/AuthModal';
-
+// Pages & Components
 import { Home } from './pages/Home';
-import { AddonDetail } from './pages/AddonDetail';
 import { SearchPage } from './pages/SearchPage';
 import { FavoritesPage } from './pages/FavoritesPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { AddonDetail } from './pages/AddonDetail';
+import { AuthModal } from './components/AuthModal';
+// Import your navigation bar / header component if you have one
+// import { Header } from './components/Header';
 
-export default function App() {
+export function App() {
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [loadingAuth, setLoadingAuth] = useState(true);
 
   useEffect(() => {
-    if (auth) {
-      const unsubscribe = auth.onAuthStateChanged((currentUser: any) => {
-        if (currentUser) {
-          setUser({
-            displayName: currentUser.displayName,
-            email: currentUser.email,
-            photoURL: currentUser.photoURL,
-          });
-        } else {
-          setUser(null);
+    // 1. Handle mobile redirect sign-in result if the browser was redirected
+    getRedirectResult(auth).catch((error) => {
+      console.error('Redirect sign-in error:', error);
+    });
+
+    // 2. Listen to real-time Firebase auth state changes
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          const userRef = doc(db, 'users', firebaseUser.uid);
+          const userSnap = await getDoc(userRef);
+
+          let profileData: UserProfile;
+
+          if (userSnap.exists()) {
+            profileData = userSnap.data() as UserProfile;
+          } else {
+            profileData = {
+              id: firebaseUser.uid,
+              name: firebaseUser.displayName || 'Minecraft Dev',
+              email: firebaseUser.email || '',
+              joinedDate: new Date().toISOString(),
+            };
+            await setDoc(userRef, profileData);
+          }
+
+          setUser(profileData);
+        } catch (err) {
+          console.error('Error syncing user data from Firestore:', err);
         }
-      });
-      return () => unsubscribe();
-    }
+      } else {
+        setUser(null);
+      }
+      setLoadingAuth(false);
+    });
+
+    return () => unsubscribe();
   }, []);
+
+  if (loadingAuth) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-sky-400 font-black text-sm">
+        Loading MIK Addons...
+      </div>
+    );
+  }
 
   return (
     <Router>
-      <div className="min-h-screen bg-black text-white font-sans selection:bg-sky-500 selection:text-slate-950">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/addon/:slug" element={<AddonDetail />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/favorite" element={<FavoritesPage user={user} onOpenAuth={() => setIsAuthModalOpen(true)} />} />
-          <Route path="/settings" element={<SettingsPage user={user} setUser={setUser} onOpenAuth={() => setIsAuthModalOpen(true)} />} />
-        </Routes>
+      <div className="min-h-screen bg-slate-950 text-white flex flex-col">
+        {/* Main Content Router */}
+        <div className="flex-1">
+          <Routes>
+            <Route path="/" element={<Home user={user} onOpenAuth={() => setIsAuthOpen(true)} />} />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/favorites" element={<FavoritesPage user={user} onOpenAuth={() => setIsAuthOpen(true)} />} />
+            <Route path="/settings" element={<SettingsPage user={user} onOpenAuth={() => setIsAuthOpen(true)} />} />
+            <Route path="/addon/:slug" element={<AddonDetail />} />
+          </Routes>
+        </div>
 
-        <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} setUser={setUser} />
-        <FloatingNav />
+        {/* Global Auth Modal */}
+        <AuthModal
+          isOpen={isAuthOpen}
+          onClose={() => setIsAuthOpen(false)}
+          onLoginSuccess={(profile) => {
+            setUser(profile);
+            setIsAuthOpen(false);
+          }}
+        />
       </div>
     </Router>
   );
 }
+
+export default App;
