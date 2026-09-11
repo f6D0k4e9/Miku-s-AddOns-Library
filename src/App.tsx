@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { auth, db } from './services/firebase';
 import { onAuthStateChanged, getRedirectResult } from 'firebase/auth';
@@ -12,8 +12,6 @@ import { FavoritesPage } from './pages/FavoritesPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AddonDetail } from './pages/AddonDetail';
 import { AuthModal } from './components/AuthModal';
-// Import your navigation bar / header component if you have one
-// import { Header } from './components/Header';
 
 export function App() {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -22,12 +20,12 @@ export function App() {
 
   useEffect(() => {
     // 1. Handle mobile redirect sign-in result if the browser was redirected
-    getRedirectResult(auth).catch((error) => {
+    getRedirectResult(auth).catch((error: any) => {
       console.error('Redirect sign-in error:', error);
     });
 
     // 2. Listen to real-time Firebase auth state changes
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: any) => {
       if (firebaseUser) {
         try {
           const userRef = doc(db, 'users', firebaseUser.uid);
@@ -48,7 +46,7 @@ export function App() {
           }
 
           setUser(profileData);
-        } catch (err) {
+        } catch (err: any) {
           console.error('Error syncing user data from Firestore:', err);
         }
       } else {
@@ -77,7 +75,7 @@ export function App() {
             <Route path="/" element={<Home user={user} onOpenAuth={() => setIsAuthOpen(true)} />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/favorites" element={<FavoritesPage user={user} onOpenAuth={() => setIsAuthOpen(true)} />} />
-            <Route path="/settings" element={<SettingsPage user={user} onOpenAuth={() => setIsAuthOpen(true)} />} />
+            <Route path="/settings" element={<SettingsPage user={user} setUser={setUser} onOpenAuth={() => setIsAuthOpen(true)} />} />
             <Route path="/addon/:slug" element={<AddonDetail />} />
           </Routes>
         </div>
