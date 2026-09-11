@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import { ADDONS_DATA } from '../data/addons';
-import { ArrowLeft, ShieldCheck, Download, Languages, Play, Heart } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Download, Languages, Play } from 'lucide-react';
 
+// DYNAMIC IMAGES FROM ADDON FOLDER: Reads directly from `src/addons/[slug]/`
 const allAddonImages = import.meta.glob<{ default: string }>('/src/addons/*/*.{png,jpg,jpeg,webp}', { eager: true });
 
 function getAddonFolderImages(slug: string): string[] {
@@ -11,78 +11,24 @@ function getAddonFolderImages(slug: string): string[] {
     .map((path) => allAddonImages[path].default);
 }
 
-export const AddonDetail: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const navigate = useNavigate();
+interface AddonDetailProps {
+  slug: string;
+  onBack: () => void;
+  onSelectAddon: (slug: string) => void;
+}
 
+export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelectAddon }) => {
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
-  const [isMediaChanging, setIsMediaChanging] = useState(false);
-  const [isFavorited, setIsFavorited] = useState(false);
 
   const addon = ADDONS_DATA.find((item) => item.slug === slug) || ADDONS_DATA[0];
-  const images = slug ? getAddonFolderImages(slug) : [];
-
-  // Check if current addon is in favorites on load or slug change
-  useEffect(() => {
-    if (!slug) return;
-    const saved = localStorage.getItem('mik_favorites');
-    if (saved) {
-      try {
-        const favoriteSlugs: string[] = JSON.parse(saved);
-        setIsFavorited(favoriteSlugs.includes(slug));
-      } catch (e) {
-        console.error('Failed to parse favorites', e);
-      }
-    }
-  }, [slug]);
-
-  // Toggle favorite state and update localStorage
-  const toggleFavorite = () => {
-    if (!slug) return;
-    const saved = localStorage.getItem('mik_favorites');
-    let favoriteSlugs: string[] = saved ? JSON.parse(saved) : [];
-
-    if (isFavorited) {
-      favoriteSlugs = favoriteSlugs.filter((s) => s !== slug);
-      setIsFavorited(false);
-    } else {
-      if (!favoriteSlugs.includes(slug)) {
-        favoriteSlugs.push(slug);
-      }
-      setIsFavorited(true);
-    }
-
-    localStorage.setItem('mik_favorites', JSON.stringify(favoriteSlugs));
-  };
-
-  const handleMediaSwitch = (index: number) => {
-    if (index === activeMediaIndex) return;
-    setIsMediaChanging(true);
-    setTimeout(() => {
-      setActiveMediaIndex(index);
-      setIsMediaChanging(false);
-    }, 150);
-  };
+  const images = getAddonFolderImages(slug);
 
   const handleDownload = () => {
-    if (addon?.downloadUrl) {
-      window.open(addon.downloadUrl, '_blank', 'noopener,noreferrer');
-    }
+    window.open(addon.downloadUrl, '_blank', 'noopener,noreferrer');
   };
-
-  const onBack = () => {
-    navigate(-1);
-  };
-
-  const onSelectAddon = (newSlug: string) => {
-    setActiveMediaIndex(0);
-    navigate(`/addon/${newSlug}`);
-  };
-
-  if (!addon) return <div className="p-4 text-white">Addon not found.</div>;
 
   return (
-    <div className="p-4 space-y-4 pb-24">
+    <div className="space-y-4">
       {/* Top Navigation */}
       <div className="flex items-center justify-between border-b border-zinc-900 pb-2">
         <button onClick={onBack} className="flex items-center space-x-1 text-sky-400 font-bold text-xs">
@@ -106,34 +52,28 @@ export const AddonDetail: React.FC = () => {
         </div>
 
         <div className="relative aspect-video rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800">
-          <div
-            className={`w-full h-full transition-all duration-200 ease-out ${
-              isMediaChanging ? 'opacity-30 blur-md scale-95' : 'opacity-100 blur-0 scale-100'
-            }`}
-          >
-            {activeMediaIndex === 0 && addon.youtubeVideoId ? (
-              <iframe
-                className="w-full h-full"
-                src={`https://www.youtube.com/embed/${addon.youtubeVideoId}`}
-                title={addon.title}
-                allowFullScreen
-              />
-            ) : (
-              <img
-                src={images[activeMediaIndex - (addon.youtubeVideoId ? 1 : 0)] || `https://placehold.co/600x400/0ea5e9/ffffff?text=${addon.title}`}
-                alt="Preview"
-                className="w-full h-full object-cover"
-              />
-            )}
-          </div>
+          {activeMediaIndex === 0 && addon.youtubeVideoId ? (
+            <iframe
+              className="w-full h-full"
+              src={`https://www.youtube.com/embed/${addon.youtubeVideoId}`}
+              title={addon.title}
+              allowFullScreen
+            />
+          ) : (
+            <img
+              src={images[activeMediaIndex - (addon.youtubeVideoId ? 1 : 0)] || `https://placehold.co/600x400/0ea5e9/ffffff?text=${addon.title}`}
+              alt="Preview"
+              className="w-full h-full object-cover"
+            />
+          )}
         </div>
 
         {/* Thumbnails */}
         <div className="flex space-x-2 overflow-x-auto pb-1">
           {addon.youtubeVideoId && (
             <button
-              onClick={() => handleMediaSwitch(0)}
-              className={`flex-shrink-0 w-16 h-12 rounded-xl border-2 flex items-center justify-center bg-zinc-900 transition ${
+              onClick={() => setActiveMediaIndex(0)}
+              className={`flex-shrink-0 w-16 h-12 rounded-xl border-2 flex items-center justify-center bg-zinc-900 ${
                 activeMediaIndex === 0 ? 'border-sky-500' : 'border-zinc-800'
               }`}
             >
@@ -148,8 +88,8 @@ export const AddonDetail: React.FC = () => {
             return (
               <button
                 key={idx}
-                onClick={() => handleMediaSwitch(indexValue)}
-                className={`flex-shrink-0 w-16 h-12 rounded-xl border-2 overflow-hidden bg-zinc-900 transition ${
+                onClick={() => setActiveMediaIndex(indexValue)}
+                className={`flex-shrink-0 w-16 h-12 rounded-xl border-2 overflow-hidden bg-zinc-900 ${
                   activeMediaIndex === indexValue ? 'border-sky-500' : 'border-zinc-800'
                 }`}
               >
@@ -162,23 +102,9 @@ export const AddonDetail: React.FC = () => {
 
       {/* Info Card */}
       <div className="bg-gradient-to-b from-zinc-900 via-zinc-950 to-black rounded-3xl p-4 border border-zinc-800/80 space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30">
-            {addon.category}
-          </span>
-
-          <button
-            onClick={toggleFavorite}
-            className={`w-9 h-9 rounded-2xl border flex items-center justify-center transition active:scale-90 ${
-              isFavorited
-                ? 'bg-rose-500/20 border-rose-500/40 text-rose-500'
-                : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
-            }`}
-            title={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-          >
-            <Heart className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
-          </button>
-        </div>
+        <span className="px-3 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30">
+          {addon.category}
+        </span>
 
         <h1 className="text-xl font-black text-white">{addon.title}</h1>
 
@@ -189,7 +115,7 @@ export const AddonDetail: React.FC = () => {
 
         <button
           onClick={handleDownload}
-          className="w-full bg-white text-slate-950 py-3 rounded-2xl font-black text-sm flex items-center justify-center space-x-2 active:scale-95 transition"
+          className="w-full bg-white text-slate-950 py-3 rounded-2xl font-black text-sm flex items-center justify-center space-x-2"
         >
           <Download className="w-4 h-4 text-slate-950" />
           <span>Download</span>
@@ -230,8 +156,11 @@ export const AddonDetail: React.FC = () => {
             {ADDONS_DATA.filter((a) => a.slug !== slug).map((mod) => (
               <div
                 key={mod.slug}
-                onClick={() => onSelectAddon(mod.slug)}
-                className="flex-shrink-0 w-32 bg-zinc-900/80 rounded-xl border border-zinc-800 overflow-hidden cursor-pointer hover:border-sky-500/50 transition active:scale-95"
+                onClick={() => {
+                  setActiveMediaIndex(0);
+                  onSelectAddon(mod.slug);
+                }}
+                className="flex-shrink-0 w-32 bg-zinc-900/80 rounded-xl border border-zinc-800 overflow-hidden cursor-pointer hover:border-sky-500/50 transition"
               >
                 <div className="p-2 space-y-1">
                   <h4 className="text-[11px] font-bold text-white truncate">{mod.title}</h4>
