@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { auth } from './services/firebase';
-import { onAuthStateChanged, getRedirectResult, User as FirebaseUser } from 'firebase/auth';
+import { onAuthStateChanged, getRedirectResult } from 'firebase/auth';
 import { UserProfile } from './types/user';
 
 // Pages & Components
@@ -32,7 +32,7 @@ export function App() {
       }
     }).catch((err: any) => console.error(err));
 
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: any) => {
       if (firebaseUser) {
         setUser({
           id: firebaseUser.uid,
