@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { auth } from './services/firebase';
-import { onAuthStateChanged, getRedirectResult } from 'firebase/auth';
+import { onAuthStateChanged, getRedirectResult, User as FirebaseUser } from 'firebase/auth';
 import { UserProfile } from './types/user';
 
 // Pages & Components
@@ -18,8 +18,7 @@ export function App() {
   const [loadingAuth, setLoadingAuth] = useState(true);
 
   useEffect(() => {
-    // Handle mobile redirect login result if popup was blocked
-    getRedirectResult(auth).then((result) => {
+    getRedirectResult(auth).then((result: any) => {
       if (result && result.user) {
         const u = result.user;
         setUser({
@@ -31,9 +30,9 @@ export function App() {
           joinedDate: new Date().toISOString(),
         });
       }
-    }).catch((err) => console.error(err));
+    }).catch((err: any) => console.error(err));
 
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
       if (firebaseUser) {
         setUser({
           id: firebaseUser.uid,
@@ -87,4 +86,3 @@ export function App() {
 }
 
 export default App;
-            
