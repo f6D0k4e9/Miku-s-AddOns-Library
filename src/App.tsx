@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { auth, db } from './services/firebase';
+import { auth } from './services/firebase';
 import { onAuthStateChanged, getRedirectResult } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { UserProfile } from './types/user';
 
 // Pages & Components
@@ -19,36 +18,31 @@ export function App() {
   const [loadingAuth, setLoadingAuth] = useState(true);
 
   useEffect(() => {
-    getRedirectResult(auth).catch((error: any) => {
-      console.error('Redirect sign-in error:', error);
-    });
+    // Handle mobile redirect login result if popup was blocked
+    getRedirectResult(auth).then((result) => {
+      if (result && result.user) {
+        const u = result.user;
+        setUser({
+          id: u.uid,
+          name: u.displayName || 'Minecraft Dev',
+          displayName: u.displayName || 'Minecraft Dev',
+          email: u.email || '',
+          photoURL: u.photoURL || undefined,
+          joinedDate: new Date().toISOString(),
+        });
+      }
+    }).catch((err) => console.error(err));
 
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: any) => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        try {
-          const userRef = doc(db, 'users', firebaseUser.uid);
-          const userSnap = await getDoc(userRef);
-
-          let profileData: UserProfile;
-
-          if (userSnap.exists()) {
-            profileData = userSnap.data() as UserProfile;
-          } else {
-            profileData = {
-              id: firebaseUser.uid,
-              name: firebaseUser.displayName || 'Minecraft Dev',
-              displayName: firebaseUser.displayName || 'Minecraft Dev',
-              email: firebaseUser.email || '',
-              photoURL: firebaseUser.photoURL || undefined,
-              joinedDate: new Date().toISOString(),
-            };
-            await setDoc(userRef, profileData);
-          }
-
-          setUser(profileData);
-        } catch (err: any) {
-          console.error('Error syncing user data from Firestore:', err);
-        }
+        setUser({
+          id: firebaseUser.uid,
+          name: firebaseUser.displayName || 'Minecraft Dev',
+          displayName: firebaseUser.displayName || 'Minecraft Dev',
+          email: firebaseUser.email || '',
+          photoURL: firebaseUser.photoURL || undefined,
+          joinedDate: new Date().toISOString(),
+        });
       } else {
         setUser(null);
       }
@@ -93,3 +87,4 @@ export function App() {
 }
 
 export default App;
+            
