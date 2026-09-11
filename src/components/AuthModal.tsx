@@ -6,16 +6,16 @@ import { UserProfile } from '../types/user';
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  setUser: (u: UserProfile | null) => void;
+  onLoginSuccess: (profile: UserProfile) => void;
 }
 
-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, setUser }) => {
+export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
   if (!isOpen) return null;
 
   const handleGoogleSignIn = async () => {
     const loggedUser = await loginWithGoogle();
     if (loggedUser) {
-      setUser(loggedUser);
+      onLoginSuccess(loggedUser);
       onClose();
     }
   };
