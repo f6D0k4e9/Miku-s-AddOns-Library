@@ -3,7 +3,7 @@ import { LogOut, ShieldAlert, CheckCircle2, Globe, Headphones, Smartphone } from
 import { logoutUser } from '../services/firebase';
 import { UserProfile } from '../types/user';
 
-export interface SettingsPageProps {
+interface SettingsPageProps {
   user: UserProfile | null;
   setUser: (u: UserProfile | null) => void;
   onOpenAuth: () => void;
@@ -19,7 +19,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser, onOpe
     <div className="p-4 space-y-4 pb-24">
       <h2 className="text-lg font-black text-white border-b border-zinc-900 pb-2">Settings</h2>
 
-      {/* Account Info / Auth Box */}
       <div className="bg-zinc-900/90 rounded-2xl p-4 border border-zinc-800 space-y-3">
         {user ? (
           <div className="flex items-center justify-between">
@@ -67,7 +66,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser, onOpe
         )}
       </div>
 
-      {/* Language */}
       <div className="bg-zinc-900/90 rounded-2xl p-3.5 border border-zinc-800 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 rounded-xl bg-zinc-800 flex items-center justify-center text-sky-400">
@@ -78,7 +76,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser, onOpe
         <span className="text-xs font-semibold text-zinc-400 bg-zinc-800/80 px-2.5 py-1 rounded-lg border border-zinc-700/50">English</span>
       </div>
 
-      {/* Support */}
       <div className="bg-zinc-900/90 rounded-2xl p-3.5 border border-zinc-800 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 rounded-xl bg-zinc-800 flex items-center justify-center text-sky-400">
@@ -89,7 +86,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser, onOpe
         <span className="text-xs text-zinc-500">&gt;</span>
       </div>
 
-      {/* App Banner */}
       <div className="bg-gradient-to-r from-sky-950/60 via-zinc-900 to-zinc-900 rounded-2xl p-3.5 border border-sky-500/20 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-xl bg-sky-500 flex items-center justify-center font-black text-slate-950 text-sm shadow-md shadow-sky-500/20">
