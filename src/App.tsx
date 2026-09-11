@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { auth } from './services/firebase';
 import { UserProfile } from './types/user';
@@ -10,6 +10,30 @@ import { FavoritesPage } from './pages/FavoritesPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AddonDetail } from './pages/AddonDetail';
 import { AuthModal } from './components/AuthModal';
+
+class RouteErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  state = { hasError: false, error: null };
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("Route crash:", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-6 bg-red-950/40 border border-red-500/50 text-red-200 m-4 rounded-xl font-mono text-xs overflow-auto">
+          <p className="font-bold text-sm mb-2">🚨 Page Render Crash:</p>
+          <pre className="whitespace-pre-wrap">{this.state.error?.toString()}</pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export function App() {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -58,23 +82,25 @@ export function App() {
 
   if (loadingAuth) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-sky-400 font-black text-sm">
-        Loading MIK Addons...
+      <div className="min-h-screen bg-black flex items-center justify-center text-sky-400 font-black text-sm tracking-widest animate-pulse">
+        LOADING MIKU'S LIBRARY...
       </div>
     );
   }
 
   return (
     <Router>
-      <div className="min-h-screen bg-slate-950 text-white flex flex-col">
+      <div className="min-h-screen bg-black text-white flex flex-col">
         <div className="flex-1">
-          <Routes>
-            <Route path="/" element={<Home user={user} onOpenAuth={() => setIsAuthOpen(true)} />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/favorites" element={<FavoritesPage user={user} onOpenAuth={() => setIsAuthOpen(true)} />} />
-            <Route path="/settings" element={<SettingsPage user={user} setUser={setUser} onOpenAuth={() => setIsAuthOpen(true)} />} />
-            <Route path="/addon/:slug" element={<AddonDetail />} />
-          </Routes>
+          <RouteErrorBoundary>
+            <Routes>
+              <Route path="/" element={<Home user={user} onOpenAuth={() => setIsAuthOpen(true)} />} />
+              <Route path="/search" element={<SearchPage />} />
+              <Route path="/favorites" element={<FavoritesPage user={user} onOpenAuth={() => setIsAuthOpen(true)} />} />
+              <Route path="/settings" element={<SettingsPage user={user} setUser={setUser} onOpenAuth={() => setIsAuthOpen(true)} />} />
+              <Route path="/addon/:slug" element={<AddonDetail />} />
+            </Routes>
+          </RouteErrorBoundary>
         </div>
 
         <AuthModal
