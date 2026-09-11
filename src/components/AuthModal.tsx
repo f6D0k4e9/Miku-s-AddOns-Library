@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { signInWithGoogle } from '../services/firebase';
+import { auth, signInWithGoogle } from '../services/firebase';
 import { UserProfile } from '../types/user';
 
 interface AuthModalProps {
@@ -13,10 +13,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSu
   if (!isOpen) return null;
 
   const handleGoogleSignIn = async () => {
-    const loggedUser = await signInWithGoogle();
-    if (loggedUser) {
-      onLoginSuccess(loggedUser);
-      onClose();
+    try {
+      await signInWithGoogle();
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const userProfile: UserProfile = {
+          id: currentUser.uid,
+          name: currentUser.displayName || 'Minecraft Dev',
+          displayName: currentUser.displayName || 'Minecraft Dev',
+          email: currentUser.email || '',
+          photoURL: currentUser.photoURL || undefined,
+          joinedDate: new Date().toISOString(),
+        };
+        onLoginSuccess(userProfile);
+        onClose();
+      }
+    } catch (error) {
+      console.error('Google Sign-In Error:', error);
     }
   };
 
