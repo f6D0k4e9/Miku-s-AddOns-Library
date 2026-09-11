@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Search, Package, Download, ArrowUpRight } from 'lucide-react';
 import { ADDONS_DATA, AddonItem } from '../data/addons';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +7,6 @@ export function SearchPage() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Filter items based on user search input
   const filteredAddons = ADDONS_DATA.filter((addon) => {
     const query = searchQuery.toLowerCase();
     return (
@@ -19,7 +18,6 @@ export function SearchPage() {
 
   return (
     <div className="p-4 space-y-4 pb-28">
-      {/* Search Input Bar with Sky Blue Accent */}
       <div className="relative pt-1">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
         <input
@@ -31,13 +29,11 @@ export function SearchPage() {
         />
       </div>
 
-      {/* Greeting Header */}
       <div className="pt-1">
         <h2 className="text-sm font-black text-white tracking-wide">Search as you please</h2>
         <p className="text-[11px] text-zinc-500 mt-0.5">Explore recommended add-ons, textures, and scripts</p>
       </div>
 
-      {/* Recommendations / Search Results Grid */}
       <div className="space-y-3 pt-1">
         {filteredAddons.length > 0 ? (
           <div className="grid grid-cols-1 gap-3">
@@ -73,7 +69,6 @@ export function SearchPage() {
             ))}
           </div>
         ) : (
-          /* No Matches Found Card */
           <div className="bg-zinc-900/40 border border-zinc-800/80 rounded-3xl p-10 text-center space-y-3 mt-6">
             <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-sky-400 mx-auto shadow-lg shadow-sky-500/5">
               <Package className="w-6 h-6" />
