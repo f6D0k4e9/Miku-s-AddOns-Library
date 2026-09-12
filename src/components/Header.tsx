@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
+import { AddonItem } from '../data/addons';
 
-export type FilterCategory = 'All' | 'For You' | 'Add-ons' | 'Textures' | 'Scripting API' | 'World';
+export type FilterCategory = 'All' | 'For You' | AddonItem['category'];
 
 interface HeaderProps {
   activeCategory: FilterCategory;
@@ -21,7 +22,6 @@ export const Header: React.FC<HeaderProps> = ({ activeCategory, setActiveCategor
     'World',
   ];
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
