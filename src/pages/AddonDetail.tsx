@@ -19,9 +19,19 @@ interface AddonDetailProps {
 
 export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelectAddon }) => {
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
+  const [isMediaChanging, setIsMediaChanging] = useState(false);
 
   const addon = ADDONS_DATA.find((item) => item.slug === slug) || ADDONS_DATA[0];
   const images = getAddonFolderImages(slug);
+
+  const handleMediaSwitch = (index: number) => {
+    if (index === activeMediaIndex) return;
+    setIsMediaChanging(true);
+    setTimeout(() => {
+      setActiveMediaIndex(index);
+      setIsMediaChanging(false);
+    }, 150);
+  };
 
   const handleDownload = () => {
     window.open(addon.downloadUrl, '_blank', 'noopener,noreferrer');
@@ -52,28 +62,34 @@ export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelect
         </div>
 
         <div className="relative aspect-video rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800">
-          {activeMediaIndex === 0 && addon.youtubeVideoId ? (
-            <iframe
-              className="w-full h-full"
-              src={`https://www.youtube.com/embed/${addon.youtubeVideoId}`}
-              title={addon.title}
-              allowFullScreen
-            />
-          ) : (
-            <img
-              src={images[activeMediaIndex - (addon.youtubeVideoId ? 1 : 0)] || `https://placehold.co/600x400/0ea5e9/ffffff?text=${addon.title}`}
-              alt="Preview"
-              className="w-full h-full object-cover"
-            />
-          )}
+          <div
+            className={`w-full h-full transition-all duration-200 ease-out ${
+              isMediaChanging ? 'opacity-30 blur-md scale-95' : 'opacity-100 blur-0 scale-100'
+            }`}
+          >
+            {activeMediaIndex === 0 && addon.youtubeVideoId ? (
+              <iframe
+                className="w-full h-full"
+                src={`https://www.youtube.com/embed/${addon.youtubeVideoId}`}
+                title={addon.title}
+                allowFullScreen
+              />
+            ) : (
+              <img
+                src={images[activeMediaIndex - (addon.youtubeVideoId ? 1 : 0)] || `https://placehold.co/600x400/0ea5e9/ffffff?text=${addon.title}`}
+                alt="Preview"
+                className="w-full h-full object-cover"
+              />
+            )}
+          </div>
         </div>
 
         {/* Thumbnails */}
         <div className="flex space-x-2 overflow-x-auto pb-1">
           {addon.youtubeVideoId && (
             <button
-              onClick={() => setActiveMediaIndex(0)}
-              className={`flex-shrink-0 w-16 h-12 rounded-xl border-2 flex items-center justify-center bg-zinc-900 ${
+              onClick={() => handleMediaSwitch(0)}
+              className={`flex-shrink-0 w-16 h-12 rounded-xl border-2 flex items-center justify-center bg-zinc-900 transition ${
                 activeMediaIndex === 0 ? 'border-sky-500' : 'border-zinc-800'
               }`}
             >
@@ -88,8 +104,8 @@ export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelect
             return (
               <button
                 key={idx}
-                onClick={() => setActiveMediaIndex(indexValue)}
-                className={`flex-shrink-0 w-16 h-12 rounded-xl border-2 overflow-hidden bg-zinc-900 ${
+                onClick={() => handleMediaSwitch(indexValue)}
+                className={`flex-shrink-0 w-16 h-12 rounded-xl border-2 overflow-hidden bg-zinc-900 transition ${
                   activeMediaIndex === indexValue ? 'border-sky-500' : 'border-zinc-800'
                 }`}
               >
@@ -115,7 +131,7 @@ export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelect
 
         <button
           onClick={handleDownload}
-          className="w-full bg-white text-slate-950 py-3 rounded-2xl font-black text-sm flex items-center justify-center space-x-2"
+          className="w-full bg-white text-slate-950 py-3 rounded-2xl font-black text-sm flex items-center justify-center space-x-2 active:scale-95 transition"
         >
           <Download className="w-4 h-4 text-slate-950" />
           <span>Download</span>
@@ -160,7 +176,7 @@ export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelect
                   setActiveMediaIndex(0);
                   onSelectAddon(mod.slug);
                 }}
-                className="flex-shrink-0 w-32 bg-zinc-900/80 rounded-xl border border-zinc-800 overflow-hidden cursor-pointer hover:border-sky-500/50 transition"
+                className="flex-shrink-0 w-32 bg-zinc-900/80 rounded-xl border border-zinc-800 overflow-hidden cursor-pointer hover:border-sky-500/50 transition active:scale-95"
               >
                 <div className="p-2 space-y-1">
                   <h4 className="text-[11px] font-bold text-white truncate">{mod.title}</h4>
