@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown, Check, Sparkles } from 'lucide-react';
 import { AddonItem } from '../data/addons';
 
-// Vite-safe dynamic asset resolution
 const logoImg = new URL('../assets/logo.png', import.meta.url).href;
 
 export type FilterCategory = 'All' | 'For You' | AddonItem['category'];
@@ -36,56 +35,76 @@ export const Header: React.FC<HeaderProps> = ({ activeCategory, setActiveCategor
   }, []);
 
   return (
-    <header className="flex items-center justify-between py-2 relative z-50">
-      {/* Brand Logo */}
-      <div 
-        className="flex items-center cursor-pointer" 
-        onClick={() => setActiveCategory('All')}
-      >
-        <img
-          src={logoImg}
-          alt="Miku Addons Logo"
-          className="h-9 w-auto object-contain drop-shadow-[0_0_8px_rgba(14,165,233,0.3)]"
-        />
-      </div>
-
-      {/* Category Dropdown */}
-      <div className="relative" ref={dropdownRef}>
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center space-x-1.5 bg-zinc-900/90 text-zinc-200 border border-zinc-800 px-3.5 py-1.5 rounded-full text-xs font-bold hover:border-sky-500/50 transition-all duration-200 shadow-md"
+    <div className="space-y-3">
+      <header className="flex items-center justify-between pt-2 pb-1 relative z-50">
+        {/* Scaled Up Logo */}
+        <div 
+          className="flex items-center cursor-pointer group" 
+          onClick={() => setActiveCategory('All')}
         >
-          <span className="text-sky-400">{activeCategory}</span>
-          <ChevronDown
-            className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 ${
-              isOpen ? 'rotate-180' : ''
-            }`}
+          <img
+            src={logoImg}
+            alt="Miku Addons Logo"
+            className="h-14 sm:h-16 w-auto object-contain drop-shadow-[0_0_12px_rgba(14,165,233,0.4)] group-hover:scale-105 transition-transform duration-300"
           />
-        </button>
+        </div>
 
-        {/* Dropdown Options */}
-        {isOpen && (
-          <div className="absolute right-0 mt-2 w-40 bg-zinc-900/95 border border-zinc-800 rounded-2xl shadow-2xl py-1.5 backdrop-blur-md">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => {
-                  setActiveCategory(cat);
-                  setIsOpen(false);
-                }}
-                className={`w-full text-left px-3.5 py-2 text-xs font-semibold flex items-center justify-between transition-colors ${
-                  activeCategory === cat
-                    ? 'bg-sky-500/10 text-sky-400 font-bold'
-                    : 'text-zinc-300 hover:bg-zinc-800/60 hover:text-white'
-                }`}
-              >
-                <span>{cat}</span>
-                {activeCategory === cat && <Check className="w-3.5 h-3.5 text-sky-400" />}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    </header>
+        {/* Enhanced Cyberpunk Dropdown */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className={`flex items-center space-x-2 bg-zinc-950/80 backdrop-blur-md px-4 py-2 rounded-2xl text-xs font-black tracking-wider uppercase border transition-all duration-300 shadow-lg ${
+              isOpen 
+                ? 'border-sky-400 shadow-[0_0_15px_rgba(56,189,248,0.3)] text-white' 
+                : 'border-zinc-800/80 hover:border-sky-500/50 text-zinc-300 hover:text-white shadow-zinc-950/50'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-sky-400 animate-pulse" />
+            <span className="bg-gradient-to-r from-sky-400 to-cyan-200 bg-clip-text text-transparent font-extrabold">
+              {activeCategory}
+            </span>
+            <ChevronDown
+              className={`w-3.5 h-3.5 text-sky-400 transition-transform duration-300 ease-out ${
+                isOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
+
+          {/* Glowing Glass Floating Panel */}
+          {isOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-zinc-950/90 border border-sky-500/30 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8),0_0_20px_rgba(14,165,233,0.15)] py-2 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
+              <div className="px-3 py-1 mb-1 text-[9px] font-black tracking-widest text-zinc-500 uppercase border-b border-zinc-800/50">
+                Filter Library
+              </div>
+              
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setActiveCategory(cat);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full text-left px-3.5 py-2.5 text-xs font-bold flex items-center justify-between transition-all duration-150 ${
+                    activeCategory === cat
+                      ? 'bg-sky-500/15 text-sky-300 border-l-2 border-sky-400 pl-4'
+                      : 'text-zinc-400 hover:bg-zinc-800/40 hover:text-zinc-100 hover:pl-4'
+                  }`}
+                >
+                  <span className="tracking-wide">{cat}</span>
+                  {activeCategory === cat && (
+                    <div className="flex items-center justify-center w-4 h-4 rounded-full bg-sky-500/20 text-sky-400">
+                      <Check className="w-3 h-3 stroke-[3]" />
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* Glowing Divider */}
+      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-sky-500/60 to-transparent shadow-[0_0_8px_rgba(14,165,233,0.5)]" />
+    </div>
   );
 };
