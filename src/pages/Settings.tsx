@@ -63,7 +63,7 @@ export const Settings: React.FC<SettingsProps> = ({
             href="mailto:thebloxgamer11@gmail.com"
             className="inline-block text-xs font-bold text-sky-400 hover:underline pt-1"
           >
-            thebloxgamer11@gmail.com
+            burentodekasuto@gmail.com
           </a>
         </div>
 
