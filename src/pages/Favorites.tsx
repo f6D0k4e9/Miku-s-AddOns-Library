@@ -1,6 +1,6 @@
 import React from 'react';
 import { ADDONS_DATA } from '../data/addons';
-import { Download, Heart, Trash2 } from 'lucide-react';
+import { Heart, Trash2 } from 'lucide-react';
 
 interface FavoritesProps {
   favorites: string[];
@@ -41,7 +41,6 @@ export const Favorites: React.FC<FavoritesProps> = ({
           </p>
         </div>
       ) : (
-        /* Single Grid Column Layout */
         <div className="grid grid-cols-1 gap-3">
           {favoriteItems.map((addon) => (
             <div
@@ -49,14 +48,12 @@ export const Favorites: React.FC<FavoritesProps> = ({
               onClick={() => onSelectAddon(addon.slug)}
               className="group relative bg-zinc-900/90 border border-zinc-800/80 hover:border-sky-500/50 rounded-2xl p-2.5 flex items-center space-x-3 cursor-pointer transition-all duration-300"
             >
-              {/* Image */}
               <img
                 src={getCoverForAddon(addon.slug)}
                 alt={addon.title}
                 className="w-16 h-16 object-cover rounded-xl bg-zinc-800 flex-shrink-0 group-hover:scale-105 transition duration-300"
               />
 
-              {/* Info */}
               <div className="flex-1 min-w-0 pr-6">
                 <span className="text-[9px] font-black uppercase text-sky-400 bg-sky-500/10 px-1.5 py-0.5 rounded border border-sky-500/20">
                   {addon.category}
@@ -69,13 +66,13 @@ export const Favorites: React.FC<FavoritesProps> = ({
                 </p>
               </div>
 
-              {/* Remove Button */}
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggleFavorite(addon.slug);
                 }}
-                className="absolute top-2.5 right-2.5 p-1.5 rounded-full text-red-400 hover:text-red-300 transition"
+                className="absolute top-2.5 right-2.5 p-1.5 rounded-full text-red-400 hover:text-red-300 transition cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -86,4 +83,3 @@ export const Favorites: React.FC<FavoritesProps> = ({
     </div>
   );
 };
-                
