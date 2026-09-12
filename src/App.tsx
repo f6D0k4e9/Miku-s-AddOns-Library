@@ -67,7 +67,6 @@ export default function App() {
   };
 
   const renderContent = () => {
-    // 1. Render Addon Detail view if slug is selected
     if (currentSlug !== null) {
       return (
         <AddonDetail
@@ -80,7 +79,6 @@ export default function App() {
       );
     }
 
-    // 2. Render standard tab views
     switch (activeTab) {
       case 'search':
         return (
@@ -114,7 +112,7 @@ export default function App() {
   };
 
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-slate-950 text-white px-4 py-3 pb-24 relative overflow-hidden">
+    <div className="w-full max-w-6xl mx-auto min-h-screen bg-slate-950 text-white px-4 sm:px-6 py-3 pb-24 relative overflow-x-hidden">
       {/* Animated Blur Wrapper */}
       <div
         className={`transition-all duration-300 ease-out ${
@@ -126,7 +124,7 @@ export default function App() {
         {renderContent()}
       </div>
 
-      {/* Floating navigation bar hides automatically when viewing details */}
+      {/* Floating Navigation Bar */}
       {currentSlug === null && (
         <FloatingNav activeTab={activeTab} setActiveTab={handleTabChange} />
       )}
