@@ -14,7 +14,8 @@ export const FloatingNav: React.FC<FloatingNavProps> = ({
   onTabChange,
   onHomeClick,
 }) => {
-  const handleNavClick = (tab: NavTab) => {
+  const handleNavClick = (e: React.MouseEvent, tab: NavTab) => {
+    e.stopPropagation();
     onTabChange?.(tab);
     if (tab === 'home' && onHomeClick) {
       onHomeClick();
@@ -22,53 +23,57 @@ export const FloatingNav: React.FC<FloatingNavProps> = ({
   };
 
   return (
-    <div className="fixed bottom-3 inset-x-4 max-w-md mx-auto bg-zinc-900/90 backdrop-blur-lg border border-zinc-800 rounded-full py-2 px-6 flex items-center justify-around shadow-2xl z-50">
+    <div className="fixed bottom-3 inset-x-4 max-w-md mx-auto bg-zinc-900/90 backdrop-blur-lg border border-zinc-800 rounded-full py-2 px-6 flex items-center justify-around shadow-2xl z-[100] pointer-events-auto">
       {/* Home Button */}
       <button
-        onClick={() => handleNavClick('home')}
-        className={`p-2 rounded-full transition-colors ${
+        type="button"
+        onClick={(e) => handleNavClick(e, 'home')}
+        className={`cursor-pointer p-2 rounded-full transition-all duration-200 active:scale-95 ${
           activeTab === 'home'
             ? 'w-10 h-8 bg-sky-500 text-slate-950 flex items-center justify-center font-bold shadow-md shadow-sky-500/30'
             : 'text-zinc-400 hover:text-white'
         }`}
       >
-        <Home className="w-4 h-4" />
+        <Home className="w-4 h-4 pointer-events-none" />
       </button>
 
       {/* Search Button */}
       <button
-        onClick={() => handleNavClick('search')}
-        className={`p-2 rounded-full transition-colors ${
+        type="button"
+        onClick={(e) => handleNavClick(e, 'search')}
+        className={`cursor-pointer p-2 rounded-full transition-all duration-200 active:scale-95 ${
           activeTab === 'search'
             ? 'w-10 h-8 bg-sky-500 text-slate-950 flex items-center justify-center font-bold shadow-md shadow-sky-500/30'
             : 'text-zinc-400 hover:text-white'
         }`}
       >
-        <Search className="w-4 h-4" />
+        <Search className="w-4 h-4 pointer-events-none" />
       </button>
 
       {/* Favorites Button */}
       <button
-        onClick={() => handleNavClick('favorites')}
-        className={`p-2 rounded-full transition-colors ${
+        type="button"
+        onClick={(e) => handleNavClick(e, 'favorites')}
+        className={`cursor-pointer p-2 rounded-full transition-all duration-200 active:scale-95 ${
           activeTab === 'favorites'
             ? 'w-10 h-8 bg-sky-500 text-slate-950 flex items-center justify-center font-bold shadow-md shadow-sky-500/30'
             : 'text-zinc-400 hover:text-white'
         }`}
       >
-        <Heart className="w-4 h-4" />
+        <Heart className="w-4 h-4 pointer-events-none" />
       </button>
 
       {/* Settings Button */}
       <button
-        onClick={() => handleNavClick('settings')}
-        className={`p-2 rounded-full transition-colors ${
+        type="button"
+        onClick={(e) => handleNavClick(e, 'settings')}
+        className={`cursor-pointer p-2 rounded-full transition-all duration-200 active:scale-95 ${
           activeTab === 'settings'
             ? 'w-10 h-8 bg-sky-500 text-slate-950 flex items-center justify-center font-bold shadow-md shadow-sky-500/30'
             : 'text-zinc-400 hover:text-white'
         }`}
       >
-        <Settings className="w-4 h-4" />
+        <Settings className="w-4 h-4 pointer-events-none" />
       </button>
     </div>
   );
