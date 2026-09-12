@@ -1,27 +1,123 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Home } from './pages/Home';
 import { AddonDetail } from './pages/AddonDetail';
-import { FloatingNav } from './components/FloatingNav';
+import { SearchPage } from './pages/SearchPage';
+import { Favorites } from './pages/Favorites';
+import { Settings } from './pages/Settings';
+import { FloatingNav, NavTab } from './components/FloatingNav';
+
+// Dynamically resolve cover images from src/addons
+const addonImages = import.meta.glob<{ default: string }>(
+  '/src/addons/*/*.{png,jpg,jpeg,webp}',
+  { eager: true }
+);
+
+function getCoverForAddon(slug: string): string {
+  const matchKey = Object.keys(addonImages).find((path) =>
+    path.includes(`/addons/${slug}/`)
+  );
+  return matchKey
+    ? addonImages[matchKey].default
+    : `https://placehold.co/600x400/0ea5e9/ffffff?text=${slug}`;
+}
 
 export default function App() {
+  // Navigation & Detail states
+  const [activeTab, setActiveTab] = useState<NavTab>('home');
   const [currentSlug, setCurrentSlug] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
-  // Trigger page transition with a quick blur effect
-  const handlePageChange = (slug: string | null) => {
+  // Favorites state with localStorage persistence
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    const saved = localStorage.getItem('miku_favorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('miku_favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = (slug: string) => {
+    setFavorites((prev) =>
+      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
+    );
+  };
+
+  // Animated page transition handler
+  const triggerTransition = (callback: () => void) => {
     setIsTransitioning(true);
     setTimeout(() => {
-      setCurrentSlug(slug);
-      // Remove blur after content updates
+      callback();
       setTimeout(() => {
         setIsTransitioning(false);
       }, 50);
     }, 180);
   };
 
+  // Open an Addon detail view
+  const handleSelectAddon = (slug: string) => {
+    triggerTransition(() => {
+      setCurrentSlug(slug);
+    });
+  };
+
+  // Switch tabs (Home, Search, Favorites, Settings)
+  const handleTabChange = (tab: NavTab) => {
+    triggerTransition(() => {
+      setCurrentSlug(null); // Clear detail view when switching tabs
+      setActiveTab(tab);
+    });
+  };
+
+  // Render current view content
+  const renderContent = () => {
+    // 1. If an addon is selected, render its detail view regardless of tab
+    if (currentSlug !== null) {
+      return (
+        <AddonDetail
+          slug={currentSlug}
+          onBack={() => triggerTransition(() => setCurrentSlug(null))}
+          onSelectAddon={handleSelectAddon}
+        />
+      );
+    }
+
+    // 2. Otherwise render the active tab view
+    switch (activeTab) {
+      case 'search':
+        return (
+          <SearchPage
+            onSelectAddon={handleSelectAddon}
+            getCoverForAddon={getCoverForAddon}
+            favorites={favorites}
+            onToggleFavorite={toggleFavorite}
+          />
+        );
+      case 'favorites':
+        return (
+          <Favorites
+            favorites={favorites}
+            onSelectAddon={handleSelectAddon}
+            onToggleFavorite={toggleFavorite}
+            getCoverForAddon={getCoverForAddon}
+          />
+        );
+      case 'settings':
+        return (
+          <Settings
+            favoriteCount={favorites.length}
+            onClearFavorites={() => setFavorites([])}
+          />
+        );
+      case 'home':
+      default:
+        return <Home onSelectAddon={handleSelectAddon} />;
+    }
+  };
+
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-black text-white px-4 py-3 pb-24 relative overflow-hidden">
-      {/* Page Content wrapper with animated blur */}
+    <div className="max-w-md mx-auto min-h-screen bg-slate-950 text-white px-4 py-3 pb-24 relative overflow-hidden">
+      {/* Animated Blur Wrapper */}
       <div
         className={`transition-all duration-300 ease-out ${
           isTransitioning
@@ -29,18 +125,14 @@ export default function App() {
             : 'opacity-100 blur-0 scale-100'
         }`}
       >
-        {currentSlug === null ? (
-          <Home onSelectAddon={(slug) => handlePageChange(slug)} />
-        ) : (
-          <AddonDetail
-            slug={currentSlug}
-            onBack={() => handlePageChange(null)}
-            onSelectAddon={(slug) => handlePageChange(slug)}
-          />
-        )}
+        {renderContent()}
       </div>
 
-      <FloatingNav onHomeClick={() => handlePageChange(null)} />
+      {/* Persistent Floating Bottom Navigation Bar */}
+      <FloatingNav
+        activeTab={currentSlug ? 'home' : activeTab}
+        setActiveTab={handleTabChange}
+      />
     </div>
   );
 }
