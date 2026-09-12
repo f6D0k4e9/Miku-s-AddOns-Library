@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 import { AddonItem } from '../data/addons';
+import logoImg from '../assets/logo.png'; // <--- Direct asset import
 
 export type FilterCategory = 'All' | 'For You' | AddonItem['category'];
 
@@ -40,7 +41,7 @@ export const Header: React.FC<HeaderProps> = ({ activeCategory, setActiveCategor
         onClick={() => setActiveCategory('All')}
       >
         <img
-          src="/logo.png"
+          src={logoImg} // <--- Using imported variable
           alt="Miku Addons Logo"
           className="h-9 w-auto object-contain drop-shadow-[0_0_8px_rgba(14,165,233,0.3)]"
         />
