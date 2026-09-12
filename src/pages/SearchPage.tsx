@@ -17,15 +17,48 @@ export const SearchPage: React.FC<SearchPageProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  // 1. Calculate Search Results
+  // Helper to flatten string | string[] into a single string
+  const formatDescription = (desc?: string | string[]): string => {
+    if (Array.isArray(desc)) return desc.join(' ');
+    return desc || 'No description available for this add-on.';
+  };
+
+  // Helper to highlight matching query text inside descriptions
+  const renderHighlightedText = (text: string, query: string) => {
+    if (!query) return text;
+
+    const parts = text.split(new RegExp(`(${query.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi'));
+
+    return (
+      <>
+        {parts.map((part, i) =>
+          part.toLowerCase() === query.toLowerCase() ? (
+            <span
+              key={i}
+              className="text-sky-400 bg-sky-500/20 px-1 rounded font-bold border border-sky-500/30"
+            >
+              {part}
+            </span>
+          ) : (
+            part
+          )
+        )}
+      </>
+    );
+  };
+
   const trimmedQuery = searchQuery.trim().toLowerCase();
 
+  // 1. Calculate Search Results across Title, Category, Author, and Description
   const searchResults = trimmedQuery
     ? ADDONS_DATA.filter((addon) => {
         const titleMatch = addon.title.toLowerCase().includes(trimmedQuery);
         const categoryMatch = addon.category.toLowerCase().includes(trimmedQuery);
         const authorMatch = addon.author.toLowerCase().includes(trimmedQuery);
-        const descriptionMatch = addon.description?.toLowerCase().includes(trimmedQuery);
+
+        const descText = formatDescription(addon.description);
+        const descriptionMatch = descText.toLowerCase().includes(trimmedQuery);
+
         return titleMatch || categoryMatch || authorMatch || descriptionMatch;
       })
     : [];
@@ -46,7 +79,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
           <Search className="w-4 h-4 text-sky-400 flex-shrink-0" />
           <input
             type="text"
-            placeholder="Search add-ons, textures, maps..."
+            placeholder="Search add-ons, descriptions, tags..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             autoFocus
@@ -90,14 +123,12 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                     onClick={() => onSelectAddon(addon.slug)}
                     className="group relative bg-zinc-900/90 border border-zinc-800/80 hover:border-sky-500/50 rounded-2xl p-2.5 flex items-center space-x-3 cursor-pointer transition-all duration-300"
                   >
-                    {/* Image */}
                     <img
                       src={getCoverForAddon(addon.slug)}
                       alt={addon.title}
                       className="w-16 h-16 object-cover rounded-xl bg-zinc-800 flex-shrink-0 group-hover:scale-105 transition duration-300"
                     />
 
-                    {/* Title + Lower Opacity Description */}
                     <div className="flex-1 min-w-0 pr-6">
                       <div className="flex items-center space-x-2">
                         <span className="text-[9px] font-black uppercase text-sky-400 bg-sky-500/10 px-1.5 py-0.5 rounded border border-sky-500/20">
@@ -108,11 +139,10 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                         {addon.title}
                       </h4>
                       <p className="text-[11px] text-zinc-400/70 line-clamp-1 mt-0.5 leading-snug">
-                        {addon.description || 'No description available for this add-on.'}
+                        {formatDescription(addon.description)}
                       </p>
                     </div>
 
-                    {/* Favorite Button */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -142,6 +172,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
           <div className="space-y-2.5">
             {searchResults.map((addon) => {
               const isFav = favorites.includes(addon.slug);
+              const fullDesc = formatDescription(addon.description);
 
               return (
                 <div
@@ -149,27 +180,24 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                   onClick={() => onSelectAddon(addon.slug)}
                   className="group relative bg-zinc-900/90 border border-zinc-800/80 hover:border-sky-500/50 rounded-2xl p-2.5 flex items-center space-x-3 cursor-pointer transition-all duration-300"
                 >
-                  {/* Image */}
                   <img
                     src={getCoverForAddon(addon.slug)}
                     alt={addon.title}
                     className="w-16 h-16 object-cover rounded-xl bg-zinc-800 flex-shrink-0 group-hover:scale-105 transition duration-300"
                   />
 
-                  {/* Title + Lower Opacity Description */}
                   <div className="flex-1 min-w-0 pr-6">
                     <span className="text-[9px] font-black uppercase text-sky-400 bg-sky-500/10 px-1.5 py-0.5 rounded border border-sky-500/20">
                       {addon.category}
                     </span>
                     <h4 className="text-xs font-bold text-white group-hover:text-sky-300 transition truncate mt-1">
-                      {addon.title}
+                      {renderHighlightedText(addon.title, trimmedQuery)}
                     </h4>
-                    <p className="text-[11px] text-zinc-400/70 line-clamp-1 mt-0.5 leading-snug">
-                      {addon.description || 'No description available for this add-on.'}
+                    <p className="text-[11px] text-zinc-400/80 line-clamp-2 mt-0.5 leading-snug">
+                      {renderHighlightedText(fullDesc, trimmedQuery)}
                     </p>
                   </div>
 
-                  {/* Favorite Button */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -221,4 +249,3 @@ export const SearchPage: React.FC<SearchPageProps> = ({
     </div>
   );
 };
-                    
