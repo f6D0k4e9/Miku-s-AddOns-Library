@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ADDONS_DATA } from '../data/addons';
-import { ArrowLeft, ShieldCheck, Download, Languages, Play } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Download, Languages, Play, Heart } from 'lucide-react';
 
 // DYNAMIC IMAGES FROM ADDON FOLDER: Reads directly from `src/addons/[slug]/`
 const allAddonImages = import.meta.glob<{ default: string }>('/src/addons/*/*.{png,jpg,jpeg,webp}', { eager: true });
@@ -15,14 +15,23 @@ interface AddonDetailProps {
   slug: string;
   onBack: () => void;
   onSelectAddon: (slug: string) => void;
+  favorites?: string[];
+  onToggleFavorite?: (slug: string) => void;
 }
 
-export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelectAddon }) => {
+export const AddonDetail: React.FC<AddonDetailProps> = ({
+  slug,
+  onBack,
+  onSelectAddon,
+  favorites = [],
+  onToggleFavorite,
+}) => {
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
   const [isMediaChanging, setIsMediaChanging] = useState(false);
 
   const addon = ADDONS_DATA.find((item) => item.slug === slug) || ADDONS_DATA[0];
   const images = getAddonFolderImages(slug);
+  const isFavorited = favorites.includes(slug);
 
   const handleMediaSwitch = (index: number) => {
     if (index === activeMediaIndex) return;
@@ -41,7 +50,7 @@ export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelect
     <div className="space-y-4">
       {/* Top Navigation */}
       <div className="flex items-center justify-between border-b border-zinc-900 pb-2">
-        <button onClick={onBack} className="flex items-center space-x-1 text-sky-400 font-bold text-xs">
+        <button onClick={onBack} className="flex items-center space-x-1 text-sky-400 font-bold text-xs cursor-pointer">
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
         </button>
@@ -88,8 +97,9 @@ export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelect
         <div className="flex space-x-2 overflow-x-auto pb-1">
           {addon.youtubeVideoId && (
             <button
+              type="button"
               onClick={() => handleMediaSwitch(0)}
-              className={`flex-shrink-0 w-16 h-12 rounded-xl border-2 flex items-center justify-center bg-zinc-900 transition ${
+              className={`flex-shrink-0 w-16 h-12 rounded-xl border-2 flex items-center justify-center bg-zinc-900 transition cursor-pointer ${
                 activeMediaIndex === 0 ? 'border-sky-500' : 'border-zinc-800'
               }`}
             >
@@ -104,8 +114,9 @@ export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelect
             return (
               <button
                 key={idx}
+                type="button"
                 onClick={() => handleMediaSwitch(indexValue)}
-                className={`flex-shrink-0 w-16 h-12 rounded-xl border-2 overflow-hidden bg-zinc-900 transition ${
+                className={`flex-shrink-0 w-16 h-12 rounded-xl border-2 overflow-hidden bg-zinc-900 transition cursor-pointer ${
                   activeMediaIndex === indexValue ? 'border-sky-500' : 'border-zinc-800'
                 }`}
               >
@@ -118,9 +129,28 @@ export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelect
 
       {/* Info Card */}
       <div className="bg-gradient-to-b from-zinc-900 via-zinc-950 to-black rounded-3xl p-4 border border-zinc-800/80 space-y-4">
-        <span className="px-3 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30">
-          {addon.category}
-        </span>
+        {/* Category Header + Heart Favorite Button */}
+        <div className="flex items-center justify-between">
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30">
+            {addon.category}
+          </span>
+
+          {/* Smooth-edged Square Favorite Button */}
+          <button
+            type="button"
+            onClick={() => onToggleFavorite?.(slug)}
+            aria-label="Favorite"
+            className="w-10 h-10 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center cursor-pointer active:scale-90 transition duration-200"
+          >
+            <Heart
+              className={`w-5 h-5 transition-all duration-200 ${
+                isFavorited
+                  ? 'text-red-500 fill-red-500 scale-110'
+                  : 'text-red-400/80'
+              }`}
+            />
+          </button>
+        </div>
 
         <h1 className="text-xl font-black text-white">{addon.title}</h1>
 
@@ -130,8 +160,9 @@ export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelect
         </div>
 
         <button
+          type="button"
           onClick={handleDownload}
-          className="w-full bg-white text-slate-950 py-3 rounded-2xl font-black text-sm flex items-center justify-center space-x-2 active:scale-95 transition"
+          className="w-full bg-white text-slate-950 py-3 rounded-2xl font-black text-sm flex items-center justify-center space-x-2 active:scale-95 transition cursor-pointer"
         >
           <Download className="w-4 h-4 text-slate-950" />
           <span>Download</span>
@@ -150,7 +181,7 @@ export const AddonDetail: React.FC<AddonDetailProps> = ({ slug, onBack, onSelect
 
         <div className="pt-4 border-t border-zinc-800/80 space-y-3">
           <h3 className="text-sm font-black text-white">Description</h3>
-          <button className="w-full py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-semibold text-zinc-300 flex items-center justify-center space-x-2">
+          <button type="button" className="w-full py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-semibold text-zinc-300 flex items-center justify-center space-x-2 cursor-pointer">
             <Languages className="w-3.5 h-3.5 text-sky-400" />
             <span>Translate</span>
           </button>
