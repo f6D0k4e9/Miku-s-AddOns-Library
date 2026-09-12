@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Header } from '../components/Header';
+import { Header, FilterCategory } from '../components/Header';
 import { ADDONS_DATA, AddonItem } from '../data/addons';
 import { Download } from 'lucide-react';
 
@@ -22,26 +22,27 @@ interface HomeProps {
 }
 
 export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
-  const [activeTab, setActiveTab] = useState<'Home' | 'For you'>('Home');
+  const [activeCategory, setActiveCategory] = useState<FilterCategory>('All');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Touch / Drag States
+  // Touch & Swipe States
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchDeltaX, setTouchDeltaX] = useState<number>(0);
   const [isSwiping, setIsSwiping] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Filter items matching selected category from addons.ts data
   const filteredAddons = ADDONS_DATA.filter((addon: AddonItem) => {
-    if (activeTab === 'For you') {
-      return addon.category === 'Add-ons' || addon.category === 'Scripting API';
-    }
-    return true;
+    if (activeCategory === 'All') return true;
+    if (activeCategory === 'For You') return addon.verifiedBy === 'Miku AddOns';
+    return addon.category === activeCategory;
   });
 
+  // Reset slide index when category changes
   useEffect(() => {
     setCurrentSlide(0);
-  }, [activeTab]);
+  }, [activeCategory]);
 
   // Infinite Auto-Slide to the left
   useEffect(() => {
@@ -54,7 +55,7 @@ export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
     return () => clearInterval(interval);
   }, [filteredAddons.length, isPaused, isSwiping]);
 
-  // Touch Handlers for Swiping
+  // Touch Event Handlers
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsPaused(true);
     setIsSwiping(true);
@@ -71,26 +72,22 @@ export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
   const handleTouchEnd = () => {
     if (containerRef.current && touchStartX !== null) {
       const containerWidth = containerRef.current.offsetWidth;
-      const swipeThreshold = containerWidth * 0.2; // 20% width to trigger slide change
+      const swipeThreshold = containerWidth * 0.2;
 
       if (touchDeltaX < -swipeThreshold) {
-        // Swiped Left -> Next
         setCurrentSlide((prev) => (prev + 1) % filteredAddons.length);
       } else if (touchDeltaX > swipeThreshold) {
-        // Swiped Right -> Previous
         setCurrentSlide((prev) => (prev - 1 + filteredAddons.length) % filteredAddons.length);
       }
     }
 
-    // Reset touch trackers
     setTouchStartX(null);
     setTouchDeltaX(0);
     setIsSwiping(false);
     setIsPaused(false);
   };
 
-  // Dynamic Translate Calculation
-  // Calculates base position + real-time pixel drag
+  // Drag offset calculator
   const getTransformStyle = () => {
     if (!containerRef.current) return `translateX(-${currentSlide * 100}%)`;
     const containerWidth = containerRef.current.offsetWidth;
@@ -101,7 +98,8 @@ export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
 
   return (
     <div className="space-y-4">
-      <Header activeTab={activeTab} setActiveTab={setActiveTab} />
+      {/* Header passing activeCategory props correctly */}
+      <Header activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
 
       {/* Sliding & Swipable Carousel */}
       {filteredAddons.length > 0 && (
@@ -110,7 +108,6 @@ export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          {/* Viewport Container */}
           <div
             ref={containerRef}
             onTouchStart={handleTouchStart}
@@ -118,7 +115,6 @@ export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
             onTouchEnd={handleTouchEnd}
             className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden border border-zinc-800 shadow-xl bg-zinc-900 touch-pan-y"
           >
-            {/* Sliding Track */}
             <div
               className={`flex w-full h-full ${
                 isSwiping ? 'transition-none' : 'transition-transform duration-500 ease-out'
@@ -129,7 +125,6 @@ export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
                 <div
                   key={item.id}
                   onClick={() => {
-                    // Prevent navigation click if user was performing a swipe
                     if (Math.abs(touchDeltaX) < 10) {
                       onSelectAddon(item.slug);
                     }
@@ -205,3 +200,4 @@ export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
     </div>
   );
 };
+                
