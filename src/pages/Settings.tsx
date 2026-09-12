@@ -60,7 +60,7 @@ export const Settings: React.FC<SettingsProps> = ({
             Have questions or want to submit an addon? Reach out to us:
           </p>
           <a
-            href="mailto:thebloxgamer11@gmail.com"
+            href="mailto:burentodekasuto@gmail.com"
             className="inline-block text-xs font-bold text-sky-400 hover:underline pt-1"
           >
             burentodekasuto@gmail.com
