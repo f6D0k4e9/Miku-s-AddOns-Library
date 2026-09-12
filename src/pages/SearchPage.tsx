@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ADDONS_DATA } from '../data/addons';
-import { Search, Heart, MessageSquarePlus, Sparkles, X, Tag, FileText } from 'lucide-react';
+import { Search, Heart, MessageSquarePlus, Sparkles, X, FileText } from 'lucide-react';
 
 interface SearchPageProps {
   onSelectAddon: (slug: string) => void;
@@ -9,18 +9,6 @@ interface SearchPageProps {
   onToggleFavorite: (slug: string) => void;
 }
 
-// Recommended search keywords matching titles & description contents
-const RECOMMENDED_KEYWORDS = [
-  'Animation',
-  'Bedrock',
-  'Player',
-  'Texture',
-  'Custom',
-  'Survival',
-  'UI',
-  'Mod',
-];
-
 export const SearchPage: React.FC<SearchPageProps> = ({
   onSelectAddon,
   getCoverForAddon,
@@ -28,10 +16,8 @@ export const SearchPage: React.FC<SearchPageProps> = ({
   onToggleFavorite,
 }) => {
   const [query, setQuery] = useState('');
-
   const trimmedQuery = query.trim().toLowerCase();
 
-  // Search filter across Title, Category, Author, AND Description lines
   const filteredAddons = ADDONS_DATA.filter((addon) => {
     if (!trimmedQuery) return true;
 
@@ -45,18 +31,15 @@ export const SearchPage: React.FC<SearchPageProps> = ({
     return matchesTitle || matchesCategory || matchesAuthor || matchesDescription;
   });
 
-  // Helper function to find and highlight matching description text
   const renderHighlightedSnippet = (description: string[], searchTerm: string) => {
     if (!searchTerm) return null;
 
-    // Find the first description line containing the query term
     const matchedLine = description.find((line) =>
       line.toLowerCase().includes(searchTerm)
     );
 
     if (!matchedLine) return null;
 
-    // Split match to highlight the exact searched word
     const parts = matchedLine.split(new RegExp(`(${searchTerm})`, 'gi'));
 
     return (
@@ -85,7 +68,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
   return (
     <div className="space-y-4 pb-20">
       {/* Search Input Bar */}
-      <div className="relative">
+      <div className="relative max-w-2xl mx-auto">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
         <input
           type="text"
@@ -103,30 +86,6 @@ export const SearchPage: React.FC<SearchPageProps> = ({
             <X className="w-3.5 h-3.5" />
           </button>
         )}
-      </div>
-
-      {/* Suggested Keywords / Description Tags */}
-      <div className="space-y-1.5">
-        <div className="flex items-center space-x-1.5 text-[10px] font-bold text-zinc-400">
-          <Tag className="w-3 h-3 text-sky-400" />
-          <span>Recommended Keywords:</span>
-        </div>
-        <div className="flex space-x-1.5 overflow-x-auto pb-1 no-scrollbar">
-          {RECOMMENDED_KEYWORDS.map((keyword) => (
-            <button
-              key={keyword}
-              type="button"
-              onClick={() => setQuery(keyword)}
-              className={`px-2.5 py-1 rounded-xl text-[10px] font-bold border transition whitespace-nowrap cursor-pointer ${
-                trimmedQuery === keyword.toLowerCase()
-                  ? 'bg-sky-500 text-slate-950 border-sky-400'
-                  : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:border-zinc-700'
-              }`}
-            >
-              #{keyword}
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* PRE-SEARCH STATE */}
@@ -148,7 +107,8 @@ export const SearchPage: React.FC<SearchPageProps> = ({
               <span>Recommended Add-ons</span>
             </h4>
 
-            <div className="grid grid-cols-1 gap-2.5">
+            {/* Pre-search Responsive Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {recommendedAddons.map((addon) => {
                 const isFavorited = favorites.includes(addon.slug);
                 return (
@@ -197,7 +157,7 @@ export const SearchPage: React.FC<SearchPageProps> = ({
         </div>
       ) : filteredAddons.length === 0 ? (
         /* NO RESULTS STATE */
-        <div className="text-center py-10 space-y-3 bg-zinc-900/50 rounded-3xl border border-zinc-800/80 p-6 mt-2">
+        <div className="text-center py-10 space-y-3 bg-zinc-900/50 rounded-3xl border border-zinc-800/80 p-6 mt-2 max-w-xl mx-auto">
           <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto text-red-400">
             <Search className="w-6 h-6" />
           </div>
@@ -222,12 +182,12 @@ export const SearchPage: React.FC<SearchPageProps> = ({
           </a>
         </div>
       ) : (
-        /* SEARCH RESULTS WITH HIGHLIGHTING */
+        /* ACTIVE SEARCH RESULTS GRID */
         <div className="space-y-2">
           <p className="text-[11px] font-bold text-zinc-400">
             Found {filteredAddons.length} result{filteredAddons.length === 1 ? '' : 's'}
           </p>
-          <div className="grid grid-cols-1 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             {filteredAddons.map((addon) => {
               const isFavorited = favorites.includes(addon.slug);
 
@@ -272,7 +232,6 @@ export const SearchPage: React.FC<SearchPageProps> = ({
                     </button>
                   </div>
 
-                  {/* Highlights matching keyword inside Description line if found */}
                   {renderHighlightedSnippet(addon.description, trimmedQuery)}
                 </div>
               );
