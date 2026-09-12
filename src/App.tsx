@@ -22,7 +22,6 @@ function getCoverForAddon(slug: string): string {
 }
 
 export default function App() {
-  // Navigation & Detail states
   const [activeTab, setActiveTab] = useState<NavTab>('home');
   const [currentSlug, setCurrentSlug] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
@@ -54,35 +53,34 @@ export default function App() {
     }, 180);
   };
 
-  // Open an Addon detail view
   const handleSelectAddon = (slug: string) => {
     triggerTransition(() => {
       setCurrentSlug(slug);
     });
   };
 
-  // Switch tabs (Home, Search, Favorites, Settings)
   const handleTabChange = (tab: NavTab) => {
     triggerTransition(() => {
-      setCurrentSlug(null); // Clear detail view when switching tabs
+      setCurrentSlug(null);
       setActiveTab(tab);
     });
   };
 
-  // Render current view content
   const renderContent = () => {
-    // 1. If an addon is selected, render its detail view regardless of tab
+    // 1. Render Addon Detail view if slug is selected
     if (currentSlug !== null) {
       return (
         <AddonDetail
           slug={currentSlug}
           onBack={() => triggerTransition(() => setCurrentSlug(null))}
           onSelectAddon={handleSelectAddon}
+          favorites={favorites}
+          onToggleFavorite={toggleFavorite}
         />
       );
     }
 
-    // 2. Otherwise render the active tab view
+    // 2. Render standard tab views
     switch (activeTab) {
       case 'search':
         return (
@@ -128,11 +126,10 @@ export default function App() {
         {renderContent()}
       </div>
 
-      {/* Persistent Floating Bottom Navigation Bar */}
-      <FloatingNav
-        activeTab={currentSlug ? 'home' : activeTab}
-        setActiveTab={handleTabChange}
-      />
+      {/* Floating navigation bar hides automatically when viewing details */}
+      {currentSlug === null && (
+        <FloatingNav activeTab={activeTab} setActiveTab={handleTabChange} />
+      )}
     </div>
   );
 }
