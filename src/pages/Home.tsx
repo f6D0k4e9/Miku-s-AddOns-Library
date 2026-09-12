@@ -1,14 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from '../components/Header';
-import { ADDONS_DATA } from '../data/addons';
+import { ADDONS_DATA, AddonItem } from '../data/addons';
 import { Download } from 'lucide-react';
 
-// DYNAMIC IMAGE LOCATOR
-const addonImages = import.meta.glob<{ default: string }>('/src/addons/*/*.{png,jpg,jpeg,webp}', { eager: true });
+const addonImages = import.meta.glob<{ default: string }>(
+  '/src/addons/*/*.{png,jpg,jpeg,webp}',
+  { eager: true }
+);
 
 function getCoverForAddon(slug: string): string {
-  const matchKey = Object.keys(addonImages).find((path) => path.includes(`/addons/${slug}/`));
-  return matchKey ? addonImages[matchKey].default : `https://placehold.co/600x400/0ea5e9/ffffff?text=${slug}`;
+  const matchKey = Object.keys(addonImages).find((path) =>
+    path.includes(`/addons/${slug}/`)
+  );
+  return matchKey
+    ? addonImages[matchKey].default
+    : `https://placehold.co/600x400/0ea5e9/ffffff?text=${slug}`;
 }
 
 interface HomeProps {
@@ -18,8 +24,34 @@ interface HomeProps {
 export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
   const [activeTab, setActiveTab] = useState<'Home' | 'For you'>('Home');
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
-  const featured = ADDONS_DATA[currentSlide] || ADDONS_DATA[0];
+  // 1. TAB FILTERING LOGIC
+  // "Home" shows everything. "For you" filters by specific categories or handpicked items.
+  const filteredAddons = ADDONS_DATA.filter((addon: AddonItem) => {
+    if (activeTab === 'For you') {
+      return addon.category === 'Add-ons' || addon.category === 'Scripting API';
+    }
+    return true; // 'Home'
+  });
+
+  const featured = filteredAddons[currentSlide] || filteredAddons[0];
+
+  // Reset slide index when switching tabs
+  useEffect(() => {
+    setCurrentSlide(0);
+  }, [activeTab]);
+
+  // 2. AUTO-ROTATION LOGIC
+  useEffect(() => {
+    if (filteredAddons.length <= 1 || isPaused) return;
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % filteredAddons.length);
+    }, 4000); // Advances every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [filteredAddons.length, isPaused]);
 
   return (
     <div className="space-y-4">
@@ -43,7 +75,11 @@ export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
 
       {/* Carousel */}
       {featured && (
-        <div className="space-y-2">
+        <div
+          className="space-y-2"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
           <div
             onClick={() => onSelectAddon(featured.slug)}
             className="group cursor-pointer relative aspect-[16/9] rounded-2xl overflow-hidden border border-zinc-800 shadow-xl bg-zinc-900"
@@ -62,7 +98,7 @@ export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
           </div>
 
           <div className="flex justify-center space-x-1.5 pt-1">
-            {ADDONS_DATA.map((_, idx) => (
+            {filteredAddons.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentSlide(idx)}
@@ -77,7 +113,7 @@ export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
 
       {/* Grid */}
       <div className="grid grid-cols-2 gap-3 pt-2">
-        {ADDONS_DATA.map((addon) => (
+        {filteredAddons.map((addon) => (
           <div
             key={addon.id}
             onClick={() => onSelectAddon(addon.slug)}
@@ -111,4 +147,3 @@ export const Home: React.FC<HomeProps> = ({ onSelectAddon }) => {
     </div>
   );
 };
-        
