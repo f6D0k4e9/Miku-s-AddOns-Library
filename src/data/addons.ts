@@ -99,4 +99,21 @@ export const ADDONS_DATA: AddonItem[] = [
       '- Military Gear and Ammunition items',
     ],
   },
+  {
+    id: '5',
+    slug: 'ai-players',
+    title: 'Ai Players',
+    author: 'Gamemode One',
+    category: 'Add-ons',
+    verifiedBy: 'Miku AddOns',
+    downloadUrl: 'https://lootdest.org/s?2Z7x3Qt1',
+    fileSize: '3.89 MB',
+    youtubeVideoId: '7QB79siPigY',
+    description: [
+      'Invite AI players into your world, and meet your new instant friends. They chop wood, mine, explore, and fight off hostile mobs right alongside you.',
+      "AI Players bring a new way to experience multiplayer. All the joy, chaos, and progression even when you're offline!",
+      "They're always down for adventure. What stories will you create together?",
+      'Made by humans.',
+    ],
+  },
 ];
