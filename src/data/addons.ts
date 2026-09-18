@@ -13,13 +13,13 @@ export interface AddonItem {
 
 export const ADDONS_DATA: AddonItem[] = [
   {
-    id: '1',
+    id: '5',
     slug: 'actions-and-stuff',
     title: 'Actions & Stuff 1.11',
     author: 'Oreville Studios',
     category: 'Textures',
     verifiedBy: 'Miku AddOns',
-    downloadUrl: 'https://rkns.link/7h6xf',
+    downloadUrl: 'https://lootdest.org/s?2Z7x3Qt1',
     fileSize: '66.20 MB',
     youtubeVideoId: 'VDk8niB2Obw',
     description: [
@@ -100,7 +100,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '5',
+    id: '1',
     slug: 'ai-players',
     title: 'Ai Players',
     author: 'Gamemode One',
