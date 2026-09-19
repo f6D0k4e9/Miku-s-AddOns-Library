@@ -19,7 +19,7 @@ export const ADDONS_DATA: AddonItem[] = [
     author: 'Gamemode One',
     category: 'Add-ons',
     verifiedBy: 'Miku AddOns',
-    downloadUrl: 'https://lootdest.org/s?2Z7x3Qt1',
+    downloadUrl: 'https://lootdest.org/s?2Z7x3Qt1&data=izvmwQjazLPdLxMBV9Fa7Vcz0buQjI2qGbwRuMA1iNzu%2Bv//0S3mORwvhaMBLN4vxvKIUeF8agRuYHyz4ARgSbrFszXrEWjL8hAhmXqKc/YQCH2Enzf6fArb3N3wJkwNyPLRAw9IYvGeXhA/mqoT4g%2Bc7CEQudRCTYkJQ7zSD8fNUX5dnr1wJzmLRQxROmVlWDcu8bOq%2BNJob/PdLROS5XwG913Hmh8ZW5VPqkny8tc%3D',
     fileSize: '3.89 MB',
     youtubeVideoId: '7QB79siPigY',
     description: [
