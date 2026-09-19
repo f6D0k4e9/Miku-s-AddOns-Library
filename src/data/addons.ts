@@ -36,7 +36,7 @@ export const ADDONS_DATA: AddonItem[] = [
     author: 'Oreville Studios',
     category: 'Add-ons',
     verifiedBy: 'Miku AddOns',
-    downloadUrl: 'https://lootdest.org/s?qEN2051H',
+    downloadUrl: 'Https://lootdest.org/s?qEN2051H&data=x5flk9Et2X1UhImGVD3iQQjFOSHdkxD8vEKP%2BUWCNWYOZUpq6Q423e1VobId0FSz%2B1qgvQ7oJLf55DyRBMUUZQ%3D%3D',
     fileSize: '40.52 MB',
     youtubeVideoId: 'AWLJGHCaDpc',
     description: [
