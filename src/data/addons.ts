@@ -101,7 +101,7 @@ export const ADDONS_DATA: AddonItem[] = [
     author: 'Oreville Studios',
     category: 'Textures',
     verifiedBy: 'Miku AddOns',
-    downloadUrl: 'https://loot-link.com/s?uaAEoFi3',
+    downloadUrl: 'https://links.lootlabs.gg/s?uaAEoFi3&data=izvmwQjazLPdLxMBV9Fa7Vcz0buQjI2qGbwRuMA1iNzu%2Bv//0S3mORwvhaMBLN4vxvKIUeF8agRuYHyz4ARgSbrFszXrEWjL8hAhmXqKc/YQCH2Enzf6fArb3N3wJkwNyPLRAw9IYvGeXhA/mqoT4g%2Bc7CEQudRCTYkJQ7zSD8fNUX5dnr1wJzmLRQxROmVlWDcu8bOq%2BNJob/PdLROS5ZluK6pyUJAYmHs%2B1n1H8Ww%3D',
     fileSize: '66.20 MB',
     youtubeVideoId: 'VDk8niB2Obw',
     description: [
