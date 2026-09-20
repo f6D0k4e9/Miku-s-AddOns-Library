@@ -19,7 +19,7 @@ export const ADDONS_DATA: AddonItem[] = [
     author: 'Gamemode One',
     category: 'Add-ons',
     verifiedBy: 'Miku AddOns',
-    downloadUrl: 'https://lootdest.org/s?2Z7x3Qt1&data=izvmwQjazLPdLxMBV9Fa7Vcz0buQjI2qGbwRuMA1iNzu%2Bv//0S3mORwvhaMBLN4vxvKIUeF8agRuYHyz4ARgSbrFszXrEWjL8hAhmXqKc/YQCH2Enzf6fArb3N3wJkwNyPLRAw9IYvGeXhA/mqoT4g%2Bc7CEQudRCTYkJQ7zSD8fNUX5dnr1wJzmLRQxROmVlWDcu8bOq%2BNJob/PdLROS5XwG913Hmh8ZW5VPqkny8tc%3D',
+    downloadUrl: 'https://lootdest.org/s?2Z7x3Qt1',
     fileSize: '3.89 MB',
     youtubeVideoId: '7QB79siPigY',
     description: [
@@ -36,7 +36,7 @@ export const ADDONS_DATA: AddonItem[] = [
     author: 'Oreville Studios',
     category: 'Add-ons',
     verifiedBy: 'Miku AddOns',
-    downloadUrl: 'Https://lootdest.org/s?qEN2051H&data=x5flk9Et2X1UhImGVD3iQQjFOSHdkxD8vEKP%2BUWCNWYOZUpq6Q423e1VobId0FSz%2B1qgvQ7oJLf55DyRBMUUZQ%3D%3D',
+    downloadUrl: 'Https://lootdest.org/s?qEN2051H',
     fileSize: '40.52 MB',
     youtubeVideoId: 'AWLJGHCaDpc',
     description: [
@@ -101,11 +101,11 @@ export const ADDONS_DATA: AddonItem[] = [
     author: 'Oreville Studios',
     category: 'Textures',
     verifiedBy: 'Miku AddOns',
-    downloadUrl: 'https://links.lootlabs.gg/s?uaAEoFi3&data=izvmwQjazLPdLxMBV9Fa7Vcz0buQjI2qGbwRuMA1iNzu%2Bv//0S3mORwvhaMBLN4vxvKIUeF8agRuYHyz4ARgSbrFszXrEWjL8hAhmXqKc/YQCH2Enzf6fArb3N3wJkwNyPLRAw9IYvGeXhA/mqoT4g%2Bc7CEQudRCTYkJQ7zSD8fNUX5dnr1wJzmLRQxROmVlWDcu8bOq%2BNJob/PdLROS5ZluK6pyUJAYmHs%2B1n1H8Ww%3D',
+    downloadUrl: 'https://links.lootlabs.gg/s?uaAEoFi3',
     fileSize: '66.20 MB',
     youtubeVideoId: 'VDk8niB2Obw',
     description: [
-      "The Animation Pack You Didn't Know You Needed: Bring your world to life with new animations, particles, textures, and more!",
+      "The Animation Pack You Didn' Didn't Know You Needed: Bring your world to life with new animations, particles, textures, and more!",
       '',
       '- Player Animations (1st & 3rd Person)',
       '- New & Improved Mob Animations',
