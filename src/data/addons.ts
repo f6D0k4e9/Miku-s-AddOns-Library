@@ -14,6 +14,29 @@ export interface AddonItem {
 export const ADDONS_DATA: AddonItem[] = [
   {
     id: '1',
+    slug: 'vibrance',
+    title: 'Vibrance',
+    author: 'Leozy & Pathway Studios',
+    category: 'Textures',
+    verifiedBy: 'Miku AddOns',
+    downloadUrl: 'https://lootdest.org/s?nQwxNQxE',
+    fileSize: '40.98 MB',
+    youtubeVideoId: '1GivaZEzt4Y',
+    description: [
+      'Elevate your world with Vibrance, a highly polished Vibrant Visuals pack including:',
+      '- Toggleable Animated Foliage',
+      '- Volumetric Lighting',
+      '- 3D Height textures',
+      '- Reflections',
+      '- Glowing Ores',
+      '- Shimmering Water & Realistic Caustics',
+      '- Custom Lighting, Fog, and Color Grading per-Biome',
+      '- Can be used on top of other VV-Packs',
+      'Requires Vibrant Visuals',
+    ],
+  },
+  {
+    id: '2',
     slug: 'roller-coaster',
     title: 'Roller Coaster 1.0',
     author: 'Gamemode One',
@@ -32,7 +55,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '2',
+    id: '3',
     slug: 'ai-players',
     title: 'Ai Players',
     author: 'Gamemode One',
@@ -49,7 +72,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '3',
+    id: '4',
     slug: 'villager-news',
     title: 'VILLAGER NEWS 1.0',
     author: 'Oreville Studios',
@@ -68,7 +91,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '4',
+    id: '5',
     slug: 'immersive-interfaces-bedrock',
     title: 'Immersive Interfaces Bedrock',
     author: 'Shrimp',
@@ -88,7 +111,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '5',
+    id: '6',
     slug: 'shadow-company-v02',
     title: 'Shadow Company v0.2',
     author: 'Unknown',
@@ -111,7 +134,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '6',
+    id: '7',
     slug: 'actions-and-stuff',
     title: 'Actions & Stuff 1.11',
     author: 'Crafty',
@@ -132,4 +155,3 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
 ];
-      
