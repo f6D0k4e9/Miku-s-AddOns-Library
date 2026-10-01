@@ -14,6 +14,24 @@ export interface AddonItem {
 export const ADDONS_DATA: AddonItem[] = [
   {
     id: '1',
+    slug: 'parkour-plus-plus',
+    title: 'Parkour ++',
+    author: 'SE7ENDAYS Studio & BLOCKLAB Studios',
+    category: 'Add-ons',
+    verifiedBy: 'Miku AddOns',
+    downloadUrl: 'https://lootdest.org/s?1fPERJoZ',
+    fileSize: '561.37 KB',
+    youtubeVideoId: 'BKESSaH56lM',
+    description: [
+      'Experience ultimate freedom of movement with Parkour++. Chain epic moves together with smooth combos, level up to gain more skills, and track your progress with an in-game smart watch.',
+      '- Dropkick, vault, slide, wall run, and more',
+      '- Gain new parkour moves by leveling up',
+      '- Smart watch that tracks your skills',
+      '- Licensed by SE7ENDAYS Studio and published by BLOCKLAB Studios.',
+    ],
+  },
+  {
+    id: '2',
     slug: 'vibrance',
     title: 'Vibrance',
     author: 'Leozy & Pathway Studios',
@@ -36,7 +54,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '2',
+    id: '3',
     slug: 'roller-coaster',
     title: 'Roller Coaster 1.0',
     author: 'Gamemode One',
@@ -55,7 +73,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '3',
+    id: '4',
     slug: 'ai-players',
     title: 'Ai Players',
     author: 'Gamemode One',
@@ -72,7 +90,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '4',
+    id: '5',
     slug: 'villager-news',
     title: 'VILLAGER NEWS 1.0',
     author: 'Oreville Studios',
@@ -91,7 +109,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '5',
+    id: '6',
     slug: 'immersive-interfaces-bedrock',
     title: 'Immersive Interfaces Bedrock',
     author: 'Shrimp',
@@ -111,7 +129,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '6',
+    id: '7',
     slug: 'shadow-company-v02',
     title: 'Shadow Company v0.2',
     author: 'Unknown',
@@ -134,7 +152,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '7',
+    id: '8',
     slug: 'actions-and-stuff',
     title: 'Actions & Stuff 1.11',
     author: 'Crafty',
@@ -155,3 +173,4 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
 ];
+      
