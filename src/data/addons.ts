@@ -14,6 +14,20 @@ export interface AddonItem {
 export const ADDONS_DATA: AddonItem[] = [
   {
     id: '1',
+    slug: 'rise-and-survive',
+    title: 'Rise and Survive',
+    author: 'Ranzie',
+    category: 'Add-ons',
+    verifiedBy: 'Miku AddOns',
+    downloadUrl: 'https://lootdest.org/s?c0chfTLM',
+    fileSize: '17.42 MB',
+    youtubeVideoId: '97u5yVJpYjY',
+    description: [
+      'Rise and Survive is a progressive apocalyptic survival addon where zombies evolve, hordes intensify, and the world becomes deadlier the longer you stay alive. Do you have what it takes to rise and survive?',
+    ],
+  },
+  {
+    id: '2',
     slug: 'parkour-plus-plus',
     title: 'Parkour ++',
     author: 'SE7ENDAYS Studio & BLOCKLAB Studios',
@@ -31,7 +45,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '2',
+    id: '3',
     slug: 'vibrance',
     title: 'Vibrance',
     author: 'Leozy & Pathway Studios',
@@ -54,7 +68,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '3',
+    id: '4',
     slug: 'roller-coaster',
     title: 'Roller Coaster 1.0',
     author: 'Gamemode One',
@@ -73,7 +87,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '4',
+    id: '5',
     slug: 'ai-players',
     title: 'Ai Players',
     author: 'Gamemode One',
@@ -90,7 +104,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '5',
+    id: '6',
     slug: 'villager-news',
     title: 'VILLAGER NEWS 1.0',
     author: 'Oreville Studios',
@@ -109,7 +123,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '6',
+    id: '7',
     slug: 'immersive-interfaces-bedrock',
     title: 'Immersive Interfaces Bedrock',
     author: 'Shrimp',
@@ -129,7 +143,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '7',
+    id: '8',
     slug: 'shadow-company-v02',
     title: 'Shadow Company v0.2',
     author: 'Unknown',
@@ -152,7 +166,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '8',
+    id: '9',
     slug: 'actions-and-stuff',
     title: 'Actions & Stuff 1.11',
     author: 'Crafty',
@@ -173,4 +187,3 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
 ];
-      
