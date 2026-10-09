@@ -14,6 +14,30 @@ export interface AddonItem {
 export const ADDONS_DATA: AddonItem[] = [
   {
     id: '1',
+    slug: 'cube-utilities',
+    title: 'Cube Utilities',
+    author: 'King Cube',
+    category: 'Add-ons',
+    verifiedBy: 'Miku AddOns',
+    downloadUrl: 'Https://loot-link.com/s?DV4QLkI5',
+    fileSize: '6.62 MB',
+    youtubeVideoId: 'HknUHjHl2Ps',
+    description: [
+      'Add Cube Utilities Add-On to any of your worlds today!',
+      'This Utility Add-On adds:',
+      '+Vein Miner',
+      '+Treecapitator',
+      '+Mob Storage',
+      '+Health Bars',
+      '+Upgradable Backpacks',
+      '+XP Storage',
+      '+Chest Sorting & more!',
+      '+All with adjustable settings.',
+      'Cube Utilities Add-On by King Cube',
+    ],
+  },
+  {
+    id: '2',
     slug: 'rise-and-survive',
     title: 'Rise and Survive',
     author: 'Ranzie',
@@ -27,7 +51,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '2',
+    id: '3',
     slug: 'parkour-plus-plus',
     title: 'Parkour ++',
     author: 'SE7ENDAYS Studio & BLOCKLAB Studios',
@@ -45,7 +69,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '3',
+    id: '4',
     slug: 'vibrance',
     title: 'Vibrance',
     author: 'Leozy & Pathway Studios',
@@ -68,7 +92,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '4',
+    id: '5',
     slug: 'roller-coaster',
     title: 'Roller Coaster 1.0',
     author: 'Gamemode One',
@@ -87,7 +111,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '5',
+    id: '6',
     slug: 'ai-players',
     title: 'Ai Players',
     author: 'Gamemode One',
@@ -104,7 +128,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '6',
+    id: '7',
     slug: 'villager-news',
     title: 'VILLAGER NEWS 1.0',
     author: 'Oreville Studios',
@@ -123,7 +147,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '7',
+    id: '8',
     slug: 'immersive-interfaces-bedrock',
     title: 'Immersive Interfaces Bedrock',
     author: 'Shrimp',
@@ -143,7 +167,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '8',
+    id: '9',
     slug: 'shadow-company-v02',
     title: 'Shadow Company v0.2',
     author: 'Unknown',
@@ -166,7 +190,7 @@ export const ADDONS_DATA: AddonItem[] = [
     ],
   },
   {
-    id: '9',
+    id: '10',
     slug: 'actions-and-stuff',
     title: 'Actions & Stuff 1.11',
     author: 'Crafty',
